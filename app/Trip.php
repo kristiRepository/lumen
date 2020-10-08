@@ -6,6 +6,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 
+
 class Trip extends Model
 {
 
@@ -26,6 +27,12 @@ class Trip extends Model
      */
     protected $hidden = [];
 
+
+    public function customers()
+    {
+        return $this->belongsToMany(Customer::class);
+    }
+
     public static $storeRules = [
         'title' => 'required',
         'destination' => 'required',
@@ -45,4 +52,15 @@ class Trip extends Model
         'price' => 'integer|min:0',
         'due_date' => 'date|date_format:Y-m-d|after:today|before:start_date'
     ];
+
+
+    public function reviews(){
+
+        return $this->hasMany(Review::class);
+    }
+
+    public function agency(){
+
+        return $this->belongsTo(Agency::class);
+    }
 }

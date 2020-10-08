@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Http\Resources\Trips\TripCollection;
+use App\Http\Resources\Trips\TripResource;
 use App\Trip;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
@@ -18,14 +19,13 @@ class TripController extends Controller
      */
     public function __construct()
     {
-        //
+        
     }
 
     public function index(){
 
-       $trips=Trip::all();
+     return TripCollection::collection(Trip::paginate(10));
 
-       return $this->successResponse($trips);
     }
 
     public function store(Request $request){
@@ -41,8 +41,8 @@ class TripController extends Controller
     public function show($trip){
 
         $trip=Trip::findOrFail($trip);
-
-        return $this->successResponse($trip);
+        
+        return $this->successResponse(new TripResource($trip));
     }
 
     public function update(Request $request,$trip){

@@ -2,6 +2,7 @@
 
 /** @var \Illuminate\Database\Eloquent\Factory $factory */
 
+use App\Agency;
 use App\Trip;
 use Faker\Generator as Faker;
 
@@ -28,7 +29,10 @@ $factory->define(Trip::class, function (Faker $faker) {
         'end_date'=>$end,
         'max_participants'=>$faker->numberBetween($min =10, $max = 50),
         'price'=>$faker->numberBetween( $min = 20, $max = 200),
-        'due_date'=>$faker->dateTimeBetween('now',$start)
+        'due_date'=>$faker->dateTimeBetween('now',$start),
+        'agency_id'=>Agency::all()->random()->id
+
+        
 
     ];
 });

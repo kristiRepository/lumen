@@ -8,6 +8,7 @@ use App\Review;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
@@ -33,9 +34,14 @@ class ReviewController extends Controller
     public function store(Request $request){
         
         $this->validate($request,Review::$storeRules);
-        $trip=Review::create($request->all());
+         $review=new Review();
+         $review->trip_id=$request->trip_id;
+         $review->body=$request->body;
+         $review->rating=$request->rating;
 
-        return $this->successResponse($trip,Response::HTTP_CREATED);
+         Auth::user()->customer->reviews()->save($review);
+
+        return $this->successResponse($review,Response::HTTP_CREATED);
 
     }
 

@@ -41,7 +41,8 @@ class Review extends Model
     
       'trip_id'=>'required|exists:trips,id',
       'body'=>'required',
-      'rating'=>'required|integer|between:1,5'
+      'rating'=>'required|integer|between:1,5',
+      
 
   ];
 
@@ -49,7 +50,9 @@ class Review extends Model
     
     'trip_id'=>'forbidden',
     'body'=>'',
-    'rating'=>'integer|between:1,5'
+    'rating'=>'integer|between:1,5',
+    'user_id'=>'forbidden'
+    
 
 ];
 

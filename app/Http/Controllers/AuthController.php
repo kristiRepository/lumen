@@ -76,7 +76,7 @@ class AuthController extends Controller
             $agency->company_name = $request->company_name; 
             $agency->address = $request->address;
             $agency->web= $request->web;
-            $user->customer()->save($agency);
+            $user->agency()->save($agency);
 
             return $this->successResponse($user->load('agency'));
 
@@ -98,8 +98,19 @@ class AuthController extends Controller
             return $this->errorResponse('User is not authorized',401);
         }
         else {
-            $user=User::where('email',$request->email)->with('agency')->get();
+            $user=User::where('email',$request->email)->first();
+            
+            if($user->role=='agency'){
+                $user=$user->load('agency');
             return $this->respondWithToken($user,$authorized);
+            }
+            else{
+                $user=$user->load('customer');
+                return $this->respondWithToken($user,$authorized);
+            }
+
+
+            
         }
 
 

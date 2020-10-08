@@ -8,6 +8,7 @@ use App\Trip;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 class TripController extends Controller
 {
@@ -31,7 +32,16 @@ class TripController extends Controller
     public function store(Request $request){
         
         $this->validate($request,Trip::$storeRules);
-        $trip=Trip::create($request->all());
+        $trip=new Trip;
+        $trip->title=$request->title;
+        $trip->destination=$request->destination;
+        $trip->start_date=$request->start_date;
+        $trip->end_date=$request->end_date;
+        $trip->max_participants=$request->max_participants;
+        $trip->price=$request->price;
+        $trip->due_date=$request->due_date;
+
+         Auth::user()->agency->trips()->save($trip);
 
         return $this->successResponse($trip,Response::HTTP_CREATED);
 

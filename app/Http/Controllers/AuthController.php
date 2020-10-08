@@ -8,7 +8,7 @@ use App\Traits\ApiResponser;
 use App\User;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -85,5 +85,24 @@ class AuthController extends Controller
 
             return $this->errorResponse('An error occured while creating user', 500);
         }
+    }
+
+    public function login(Request $request){
+
+        $this->validate($request,User::$loginRules);
+
+        $input=$request->only('email','password');
+        
+
+        if(! $authorized=Auth::attempt($input)){
+            return $this->errorResponse('User is not authorized',401);
+        }
+        else {
+            $user=User::where('email',$request->email)->with('agency')->get();
+            return $this->respondWithToken($user,$authorized);
+        }
+
+
+
     }
 }

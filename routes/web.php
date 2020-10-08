@@ -15,6 +15,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 $router->post('/auth/customer_signup','AuthController@register_customer');
 $router->post('/auth/agency_signup','AuthController@register_agency');
+$router->post('/auth/login','AuthController@login');
 
 
 $router->get('/trips','TripController@index');

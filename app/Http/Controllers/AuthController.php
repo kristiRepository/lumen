@@ -27,7 +27,7 @@ class AuthController extends Controller
     {
 
         $this->validate($request, User::$storeRulesCustomer);
-        
+
 
         try {
 
@@ -36,19 +36,17 @@ class AuthController extends Controller
             $password = Hash::make($request->password);
             $user->password = $password;
             $user->email = $request->email;
-            $user->role ='customer';
+            $user->role = 'customer';
             $user->phone_number = $request->phone_number;
             $user->save();
-            $customer=new Customer();
-            $customer->name = $request->name; 
+            $customer = new Customer();
+            $customer->name = $request->name;
             $customer->surname = $request->surname;
             $customer->gender = $request->gender;
             $customer->age = $request->age;
             $user->customer()->save($customer);
 
             return $this->successResponse($user->load('customer'));
-
-
         } catch (Exception $e) {
 
             return $this->errorResponse('An error occured while creating user', 500);
@@ -60,7 +58,7 @@ class AuthController extends Controller
     {
 
         $this->validate($request, User::$storeRulesAgency);
-        
+
 
         try {
 
@@ -69,71 +67,60 @@ class AuthController extends Controller
             $password = Hash::make($request->password);
             $user->password = $password;
             $user->email = $request->email;
-            $user->role ='agency';
+            $user->role = 'agency';
             $user->phone_number = $request->phone_number;
             $user->save();
-            $agency=new Agency();
-            $agency->company_name = $request->company_name; 
+            $agency = new Agency();
+            $agency->company_name = $request->company_name;
             $agency->address = $request->address;
-            $agency->web= $request->web;
+            $agency->web = $request->web;
             $user->agency()->save($agency);
 
             return $this->successResponse($user->load('agency'));
-
-
         } catch (Exception $e) {
 
             return $this->errorResponse('An error occured while creating user', 500);
         }
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
 
-        $this->validate($request,User::$loginRules);
+        $this->validate($request, User::$loginRules);
 
-        $input=$request->only('email','password');
-        
+        $input = $request->only('email', 'password');
 
-        if(! $authorized=Auth::attempt($input)){
-            return $this->errorResponse('User is not authorized',401);
-        }
-        else {
-            $user=User::where('email',$request->email)->first();
-            
-            if($user->role=='agency'){
-                $user=$user->load('agency');
-            return $this->respondWithToken($user,$authorized);
+
+        if (!$authorized = Auth::attempt($input)) {
+            return $this->errorResponse('User is not authorized', 401);
+        } else {
+            $user = User::where('email', $request->email)->first();
+
+            if ($user->role == 'agency') {
+                $user = $user->load('agency');
+                return $this->respondWithToken($user, $authorized);
+            } else {
+                $user = $user->load('customer');
+                return $this->respondWithToken($user, $authorized);
             }
-            else{
-                $user=$user->load('customer');
-                return $this->respondWithToken($user,$authorized);
-            }
-
-
-            
         }
-
-
     }
 
-    public function change_password(Request $request){
+    public function change_password(Request $request)
+    {
 
-        
-        $this->validate($request,User::$changePasswordRules);
-        $user=User::find($user=Auth::user()->id);
-        
-        
-        if (Hash::check($request->old_password, Auth::user()->password)) { 
+
+        $this->validate($request, User::$changePasswordRules);
+        $user = User::find($user = Auth::user()->id);
+
+
+        if (Hash::check($request->old_password, Auth::user()->password)) {
             $user->password = Hash::make($request->new_password);
             $user->save();
 
             return $this->successResponse($user);
-
+        } else {
+            return $this->errorResponse('Old password is not correct', 401);
+        }
     }
-    else{
-        return $this->errorResponse('Old password is not correct',401);
-    }
-}
-
-
 }

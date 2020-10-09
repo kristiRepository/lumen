@@ -8,6 +8,7 @@ use App\Http\Resources\Agencies\AgencyResource;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AgencyController extends Controller
@@ -81,6 +82,28 @@ class AgencyController extends Controller
             return $this->errorResponse('You have not access to this data', 401);
         }
 
+
+    }
+
+    public function numberOfParticipantsOnTrip($trip){
+        $agency=Auth::user();
+        dd($agency);
+    }
+
+    public function getPreviousTripsReports(){
+
+        $trips=[];
+        foreach(Auth::user()->agency->trips as $trip){
+            $trips[]=$trip->title;
+        }
+
+        $total_earnings=0;
+        foreach(Auth::user()->agency->trips as $trip){
+            $total_earnings=$total_earnings + $trip->price;
+        }
+        
+        
+    
 
     }
 

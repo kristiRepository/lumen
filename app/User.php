@@ -86,7 +86,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         
     ];
 
-    public  $updateRulesAgency = [
+    public $updateRulesAgency = [
 
         'username' => 'min:6|unique:users,username',
         'email'=>'email|unique:users,email',
@@ -102,6 +102,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'email'=>'required|email',
         'password'=>'required',
         'role'=>'in:agency,customer'
+    ];
+
+    public static $changePasswordRules=[
+        'old_password'=>'required',
+        'new_password'=>'required',
+        'confirm_password'=>'required|same:new_password'
     ];
 
     public function getJWTIdentifier()

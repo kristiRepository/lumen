@@ -21,79 +21,73 @@ class ReviewController extends Controller
      */
     public function __construct()
     {
-        
     }
 
-    public function index($trip){
+    public function index($trip)
+    {
 
-        return ReviewCollection::collection(Review::where('trip_id',$trip)->paginate(10));
-
-
+        return ReviewCollection::collection(Review::where('trip_id', $trip)->paginate(10));
     }
 
 
-    public function store(Request $request,$trip_id){
-        
-        
+    public function store(Request $request, $trip_id)
+    {
+
+
         $trip = Trip::findOrFail($trip_id);
-        
-        if(! $trip->alreadyRegistered($trip_id)){
 
-            return $this->errorResponse('You can\' review this trip',401);
+        if (!$trip->alreadyRegistered($trip_id)) {
+
+            return $this->errorResponse('You can\' review this trip', 401);
         }
 
-        if($trip->isClosed()){
-            return $this->errorResponse('This trip has not happened yet',401);
+        if ($trip->isClosed()) {
+            return $this->errorResponse('This trip has not happened yet', 401);
         }
 
-        $this->validate($request,Review::$storeRules);
-         $review=new Review();
-         $review->trip_id=$trip_id;
-         $review->body=$request->body;
-         $review->rating=$request->rating;
+        $this->validate($request, Review::$storeRules);
+        $review = new Review();
+        $review->trip_id = $trip_id;
+        $review->body = $request->body;
+        $review->rating = $request->rating;
 
-         Auth::user()->customer->reviews()->save($review);
+        Auth::user()->customer->reviews()->save($review);
 
-        return $this->successResponse($review,Response::HTTP_CREATED);
-
+        return $this->successResponse($review, Response::HTTP_CREATED);
     }
 
-    public function show($review){
+    public function show($review)
+    {
 
-        $review=Review::findOrFail($review);
-        
+        $review = Review::findOrFail($review);
+
         return $this->successResponse(new ReviewResource($review));
-        
     }
 
-    public function update(Request $request,$review){
-       
-        $this->validate($request,Review::$updateRules);
-        $review=Review::findOrFail($review);
+    public function update(Request $request, $review)
+    {
+
+        $this->validate($request, Review::$updateRules);
+        $review = Review::findOrFail($review);
 
         $review->fill($request->all());
 
-        if($review->isClean()){
-            return $this->errorResponse('At least one value must change',Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($review->isClean()) {
+            return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $review->save();
 
         return $this->successResponse($review);
-        
-
-
     }
 
-    public function destroy($review){
+    public function destroy($review)
+    {
 
-        $review=Review::findOrFail($review);
+        $review = Review::findOrFail($review);
 
         $review->delete();
 
         return $this->successResponse($review);
-       
     }
-
-    
 }

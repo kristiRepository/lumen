@@ -23,11 +23,27 @@ class TripController extends Controller
         
     }
 
-    public function index(){
+    public function index(Request $request){
 
-     return TripCollection::collection(Trip::paginate(10));
+    if($request->has('title')){
+        return TripCollection::collection(Trip::where('title','like','%'.$request->title.'%')->paginate(10));
+    }
+
+    if($request->has('destination')){
+        return TripCollection::collection(Trip::where('destination','=',$request->destination)->paginate(10));
+    }
+    if($request->has('max_price')){
+        return TripCollection::collection(Trip::where('price','<=',$request->max_price)->paginate(10));
+    }
+    if($request->has('upcoming')){
+        return TripCollection::collection(Trip::where('start_date','>',date('Y-m-d'))->paginate(10));
+    }
+
+    return TripCollection::collection(Trip::paginate(10));
+     
 
     }
+
 
     public function store(Request $request){
         

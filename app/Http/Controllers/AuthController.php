@@ -114,6 +114,26 @@ class AuthController extends Controller
         }
 
 
+    }
+
+    public function change_password(Request $request){
+
+        
+        $this->validate($request,User::$changePasswordRules);
+        $user=User::find($user=Auth::user()->id);
+        
+        
+        if (Hash::check($request->old_password, Auth::user()->password)) { 
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return $this->successResponse($user);
 
     }
+    else{
+        return $this->errorResponse('Old password is not correct',401);
+    }
+}
+
+
 }

@@ -32,6 +32,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     $router->group(['middleware' => 'auth'], function () use ($router) {
 
+        //Change password
+
+        $router->post('/auth/change-password','AuthController@change_password');
+
 
 
         //Restricted for agencies

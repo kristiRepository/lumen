@@ -26,20 +26,58 @@ $router->get('/trips/{trip}','TripController@show');
 $router->get('/{trip}/reviews','ReviewController@index');
 $router->get('/{trip}/reviews/{review}','ReviewController@show');
 
+//Logout agency
+
+$router->get('/agencies','AgencyController@index');
+
 
 $router->group(['middleware'=>'auth'],function () use ($router){
 
-//Login trip
+
+  
+//Restricted for agencies
+$router->group(['middleware'=>'is_agency'],function () use ($router){
+
+//Trip Actions
 $router->post('/trips','TripController@store');
 $router->put('/trips/{trip}','TripController@update');
 $router->patch('/trips/{trip}','TripController@update');
 $router->delete('/trips/{trip}','TripController@destroy');
 
+//Customers
+
+$router->get('/customers','CustomerController@index');
+
+
+//Profile agency
+
+$router->get('/agencies/{agency}','AgencyController@profile');
+$router->delete('/agencies/{agency}','AgencyController@destroy');
+
+
+});
+
+
+
+
+//Restricted for customers
+$router->group(['middleware'=>'is_customer'],function () use ($router){
 //Login review
 $router->post('/{trip}/reviews','ReviewController@store');
 $router->put('/{trip}/reviews/{review}','ReviewController@update');
 $router->patch('/{trip}/reviews/{review}','ReviewController@update');
 $router->delete('/{trip}/reviews/{review}','ReviewController@destroy');
+
+//Profile customer
+$router->get('/customers/{customer}','CustomerController@profile');
+$router->delete('/customers/{customer}','CustomerController@destroy');
+$router->put('/customers/{customer}','CustomerController@update');
+$router->patch('/customers/{customer}','CustomerController@update');
+
+
+});
+
+
 });
 
 

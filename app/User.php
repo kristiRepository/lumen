@@ -73,12 +73,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     ];
 
 
-    public static $updateRulesCustomer = [
+    public $updateRulesCustomer = [
 
         'username' => 'min:6|unique:users,username',
-        'password' => '',
         'email'=>'email|unique:users,email',
-        'role'=>'in:agency,customer',
         'phone_number'=>'digits:10',
         'name' => '',
         'surname' => '',
@@ -88,12 +86,10 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         
     ];
 
-    public static $updateRulesAgency = [
+    public  $updateRulesAgency = [
 
         'username' => 'min:6|unique:users,username',
-        'password' => '',
         'email'=>'email|unique:users,email',
-        'role'=>'in:agency,customer',
         'phone_number'=>'digits:10',
         'company_name' => '',
         'address' => '',

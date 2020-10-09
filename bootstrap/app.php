@@ -79,6 +79,8 @@ $app->configure('app');
 
 $app->routeMiddleware([
     'auth' => App\Http\Middleware\Authenticate::class,
+    'is_agency'=>App\Http\Middleware\IsAgencyMiddleware::class,
+    'is_customer'=>App\Http\Middleware\IscustomerMiddleware::class,
 ]);
 
 /*

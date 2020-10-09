@@ -12,9 +12,8 @@ class CustomerCollection extends JsonResource
         return [
            'name'=>$this->name,
            'surname'=>$this->surname,
-           'href'=>[
-               'link'=>url('/api/customers',$this->id)
-           ]
+           'email'=>$this->user->email,
+           
         ];
     }
 }

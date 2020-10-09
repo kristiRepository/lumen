@@ -2,22 +2,22 @@
 
 
 
-namespace App\Http\Resources\Customers;
+namespace App\Http\Resources\Agencies;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CustomerResource extends JsonResource
+class AgencyResource extends JsonResource
 {
     public function toArray($request)
     {
         return [
-            'name'=>$this->name,
-            'surname'=>$this->surname,
+            'company_name'=>$this->company_name,
+            'address'=>$this->address,
             'email'=>$this->user->email,
-            'age'=>$this->age,
-            'gender'=>$this->gender,
+            'web'=>$this->web,
             'username'=>$this->user->username,
             'phone_number'=>$this->user->phone_number
+
             
          ];
     }

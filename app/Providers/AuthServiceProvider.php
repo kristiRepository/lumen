@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,5 +36,17 @@ class AuthServiceProvider extends ServiceProvider
                 return User::where('api_token', $request->input('api_token'))->first();
             }
         });
+
+        Gate::define('customer-profile',function($customer){
+            
+            return $customer->id == Auth::user()->id;
+        });
+
+        Gate::define('agency-profile',function($agency){
+            
+            return $agency->id == Auth::user()->id;
+        });
+
+
     }
 }

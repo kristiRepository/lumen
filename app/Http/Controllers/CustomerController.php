@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Customer;
+use App\Http\Resources\Customers\CustomerCollection;
+use App\Http\Resources\Customers\CustomerResource;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
-
-
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Gate;
 
 class CustomerController extends Controller
 {
@@ -18,43 +20,65 @@ class CustomerController extends Controller
      */
     public function __construct()
     {
-        
     }
 
-    public function index(){
+    public function index()
+    {
 
-       
-     
-
+        return CustomerCollection::collection(Customer::paginate(10));
     }
 
-    public function store(Request $request){
-        
 
 
+    public function profile($customer)
+    {
 
+        $customer = Customer::findOrFail($customer);
+
+
+        if (Gate::allows('customer-profile', $customer)) {
+            return $this->successResponse(new CustomerResource($customer));
+        } else {
+            return $this->errorResponse('You have not access to this data', 401);
+        }
     }
 
-    public function show(){
+    public function update(Request $request,$customer)
+    {
 
-        
-        
-    }
+        $customer=Customer::findOrFail($customer);
+        if (Gate::allows('customer-profile', $customer)) {
+            $this->validate($request,$customer->user->updateRulesCustomer);
+            $customer->fill($request->all());
 
-    public function update(Request $request){
-
-      
-
-
-    }
-
-    public function destroy(){
-
-        
-
-    }
-
-   
-
+            if($customer->isClean()){
+                return $this->errorResponse('At least one value must change',Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
     
+            $customer->save();
+    
+            return $this->successResponse($customer);
+
+        }else{
+            return $this->errorResponse('You have not access to this data', 401);
+        }
+
+
+
+    }
+
+    public function destroy($customer)
+    {  
+        $customer = Customer::findOrFail($customer);
+
+        if (Gate::allows('customer-profile', $customer)) {
+            
+            $customer->user->delete();
+            $customer->delete();
+
+            return $this->successResponse($customer);
+        } else {
+            return $this->errorResponse('You have not access to this data', 401);
+        }
+    }
 }

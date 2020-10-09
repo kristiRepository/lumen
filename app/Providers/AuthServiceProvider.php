@@ -47,6 +47,8 @@ class AuthServiceProvider extends ServiceProvider
             return $agency->id == Auth::user()->id;
         });
 
+        
 
     }
+    
 }

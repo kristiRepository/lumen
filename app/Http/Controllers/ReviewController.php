@@ -6,6 +6,7 @@ use App\Http\Resources\Reviews\ReviewCollection;
 use App\Http\Resources\Reviews\ReviewResource;
 use App\Review;
 use App\Traits\ApiResponser;
+use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -31,11 +32,23 @@ class ReviewController extends Controller
     }
 
 
-    public function store(Request $request){
+    public function store(Request $request,$trip_id){
         
+        
+        $trip = Trip::findOrFail($trip_id);
+        
+        if(! $trip->alreadyRegistered($trip_id)){
+
+            return $this->errorResponse('You can\' review this trip',401);
+        }
+
+        if($trip->isClosed()){
+            return $this->errorResponse('This trip has not happened yet',401);
+        }
+
         $this->validate($request,Review::$storeRules);
          $review=new Review();
-         $review->trip_id=$request->trip_id;
+         $review->trip_id=$trip_id;
          $review->body=$request->body;
          $review->rating=$request->rating;
 

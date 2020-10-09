@@ -39,7 +39,7 @@ class Review extends Model
 
     public static $storeRules = [
     
-      'trip_id'=>'required|exists:trips,id',
+      
       'body'=>'required',
       'rating'=>'required|integer|between:1,5',
       
@@ -48,7 +48,7 @@ class Review extends Model
 
   public static $updateRules = [
     
-    'trip_id'=>'forbidden',
+    
     'body'=>'',
     'rating'=>'integer|between:1,5',
     'user_id'=>'forbidden'

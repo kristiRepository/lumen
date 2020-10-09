@@ -4,8 +4,7 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\Model;
-
-
+use Illuminate\Support\Facades\Auth;
 
 class Trip extends Model
 {
@@ -54,13 +53,42 @@ class Trip extends Model
     ];
 
 
-    public function reviews(){
+    public function reviews()
+    {
 
         return $this->hasMany(Review::class);
     }
 
-    public function agency(){
+
+    public function agency()
+    {
 
         return $this->belongsTo(Agency::class);
+    }
+
+
+
+    public function isClosed()
+    {
+        return $this->start_date < date('Y-m-d');
+    }
+
+
+    public function alreadyRegistered($trip)
+    {
+
+        if (Auth::user()->customer->trips != NULL) {
+            foreach (Auth::user()->customer->trips as $c_trip) {
+                if ($c_trip->id == $trip) {
+
+                    return true;
+                } else {
+
+                    return false;
+                }
+            }
+        }
+        
+        return false;
     }
 }

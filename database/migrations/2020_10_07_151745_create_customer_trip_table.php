@@ -17,7 +17,7 @@ class CreateCustomerTripTable extends Migration
             $table->increments('id');
             $table->integer('customer_id');
             $table->integer('trip_id');
-            $table->boolean('paid');
+            $table->boolean('paid')->nullable();
             $table->timestamps();
         });
     }

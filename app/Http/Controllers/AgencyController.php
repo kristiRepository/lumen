@@ -90,13 +90,15 @@ class AgencyController extends Controller
 
     public function getPreviousTripsReports(){
 
+        $data=Auth::user()->agency->trips()->where('start_date','<',date('Y-m-d'))->get();
+        
         $trips=[];
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
             $trips[]=$trip->title;
         } 
 
         $ratings=[];
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
 
            $sum=0;
            if($trip->reviews->count()>0){
@@ -114,28 +116,29 @@ class AgencyController extends Controller
 
         $participants_per_trip=[];
 
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
+           
             $participants_per_trip[$trip->title]=$trip->numberOfParticipantsOnTrip($trip->id);
         }
 
         $total_participants=0;
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
             $total_participants=$total_participants+$trip->numberOfParticipantsOnTrip($trip->id);
         }
 
         $earnings_per_trip=[];
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
             $earnings_per_trip[$trip->title]=$trip->numberOfParticipantsOnTrip($trip->id)*$trip->price;
         }
 
        
         $total_earnings=0;
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
             $total_earnings=$total_earnings + $trip->numberOfParticipantsOnTrip($trip->id)*$trip->price;
         }
 
         $total_cost=0;
-        foreach(Auth::user()->agency->trips as $trip){
+        foreach($data as $trip){
             $total_cost=$total_cost + $trip->cost;
         }
 
@@ -151,6 +154,8 @@ class AgencyController extends Controller
             'total_cost'=>$total_cost,
             'profit'=>$profit
         ];
+
+        return $this->successResponse($report,200);
        
 
     }

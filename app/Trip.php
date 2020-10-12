@@ -95,11 +95,12 @@ class Trip extends Model
 
     public function numberOfParticipantsOnTrip($trip){
        
-        $agency=Auth::user()->agency;
+        
         $trip=$this->findOrFail($trip);
+        
 
 
-        if($trip->isClosed()){
+        if(! $trip->isClosed()){
             return 0;
         }
         else{

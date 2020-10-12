@@ -30,10 +30,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('/agencies', 'AgencyController@index');
 
 
+
+
     $router->group(['middleware' => 'auth'], function () use ($router) {
 
         //Change password
-
         $router->post('/auth/change-password','AuthController@change_password');
 
 

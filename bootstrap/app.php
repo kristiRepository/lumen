@@ -62,6 +62,15 @@ $app->singleton(
 
 $app->configure('app');
 
+$app->configure('query-builder');
+$app->configure('queue');
+
+
+$app->configure('mail');
+$app->alias('mailer', Illuminate\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\Mailer::class);
+$app->alias('mailer', Illuminate\Contracts\Mail\MailQueue::class);
+
 /*
 |--------------------------------------------------------------------------
 | Register Middleware
@@ -97,6 +106,9 @@ $app->routeMiddleware([
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
+$app->register(Spatie\QueryBuilder\QueryBuilderServiceProvider::class);
+$app->register(Illuminate\Mail\MailServiceProvider::class);
+
 // $app->register(App\Providers\EventServiceProvider::class);
 
 /*

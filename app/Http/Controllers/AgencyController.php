@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Agency;
 use App\Http\Resources\Agencies\AgencyCollection;
 use App\Http\Resources\Agencies\AgencyResource;
+use App\Jobs\SendOfferJob;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -85,26 +86,81 @@ class AgencyController extends Controller
 
     }
 
-    public function numberOfParticipantsOnTrip($trip){
-        $agency=Auth::user();
-        dd($agency);
-    }
+
 
     public function getPreviousTripsReports(){
 
         $trips=[];
         foreach(Auth::user()->agency->trips as $trip){
             $trips[]=$trip->title;
+        } 
+
+        $ratings=[];
+        foreach(Auth::user()->agency->trips as $trip){
+
+           $sum=0;
+           if($trip->reviews->count()>0){
+           foreach($trip->reviews as $review){
+               $sum=$sum+$review->rating;
+           }
+           $rating_per_trip=$sum/$trip->reviews->count();
+        
+           $ratings[$trip->title]=$rating_per_trip;}
+           else{
+            $ratings[$trip->title]='This trip has no ratings yet';
+           }
         }
 
+
+        $participants_per_trip=[];
+
+        foreach(Auth::user()->agency->trips as $trip){
+            $participants_per_trip[$trip->title]=$trip->numberOfParticipantsOnTrip($trip->id);
+        }
+
+        $total_participants=0;
+        foreach(Auth::user()->agency->trips as $trip){
+            $total_participants=$total_participants+$trip->numberOfParticipantsOnTrip($trip->id);
+        }
+
+        $earnings_per_trip=[];
+        foreach(Auth::user()->agency->trips as $trip){
+            $earnings_per_trip[$trip->title]=$trip->numberOfParticipantsOnTrip($trip->id)*$trip->price;
+        }
+
+       
         $total_earnings=0;
         foreach(Auth::user()->agency->trips as $trip){
-            $total_earnings=$total_earnings + $trip->price;
+            $total_earnings=$total_earnings + $trip->numberOfParticipantsOnTrip($trip->id)*$trip->price;
         }
-        
-        
-    
 
+        $total_cost=0;
+        foreach(Auth::user()->agency->trips as $trip){
+            $total_cost=$total_cost + $trip->cost;
+        }
+
+        $profit=$total_earnings-$total_cost;
+
+        $report=[
+            'my_trips'=>$trips,
+            'participants_per_trip'=>$participants_per_trip,
+            'total_participants'=>$total_participants,
+            'ratings_per_trip'=>$ratings,
+            'earnings_per_trip'=>$earnings_per_trip,
+            'total_earnings'=>$total_earnings,
+            'total_cost'=>$total_cost,
+            'profit'=>$profit
+        ];
+       
+
+    }
+
+    public function sendOffers(Request $request){
+
+        
+        $this->dispatch(new SendOfferJob($request->all()));
+        
+       
     }
 
    

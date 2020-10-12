@@ -9,6 +9,7 @@ use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class TripController extends Controller
 {
@@ -25,21 +26,13 @@ class TripController extends Controller
 
     public function index(Request $request){
 
-    if($request->has('title')){
-        return TripCollection::collection(Trip::where('title','like','%'.$request->title.'%')->paginate(10));
-    }
+    $trips = QueryBuilder::for(Trip::class)
+            ->allowedFilters(['title','destination','max_price','upcoming'])
+            ->paginate(10);
 
-    if($request->has('destination')){
-        return TripCollection::collection(Trip::where('destination','=',$request->destination)->paginate(10));
-    }
-    if($request->has('max_price')){
-        return TripCollection::collection(Trip::where('price','<=',$request->max_price)->paginate(10));
-    }
-    if($request->has('upcoming')){
-        return TripCollection::collection(Trip::where('start_date','>',date('Y-m-d'))->paginate(10));
-    }
+           
 
-    return TripCollection::collection(Trip::paginate(10));
+     return TripCollection::collection($trips);
      
 
     }
@@ -56,6 +49,7 @@ class TripController extends Controller
         $trip->max_participants=$request->max_participants;
         $trip->price=$request->price;
         $trip->due_date=$request->due_date;
+        $trip->cost=$request->cost;
 
          Auth::user()->agency->trips()->save($trip);
 
@@ -97,6 +91,9 @@ class TripController extends Controller
 
         return $this->successResponse($trip);
     }
+
+    
+
 
     
 }

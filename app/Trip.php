@@ -91,4 +91,20 @@ class Trip extends Model
         
         return false;
     }
+
+
+    public function numberOfParticipantsOnTrip($trip){
+       
+        $agency=Auth::user()->agency;
+        $trip=$this->findOrFail($trip);
+
+
+        if($trip->isClosed()){
+            return 0;
+        }
+        else{
+             return $trip->customers->count();
+        }
+        
+    }
 }

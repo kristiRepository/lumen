@@ -22,6 +22,7 @@ class CreateTripsTable extends Migration
             $table->integer('max_participants');
             $table->double('price');
             $table->date('due_date');
+            $table->integer('cost');
             $table->integer('agency_id')->unsigned();
             $table->timestamps();
 

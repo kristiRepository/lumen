@@ -28,8 +28,9 @@ $factory->define(Trip::class, function (Faker $faker) {
         'start_date'=>$start,
         'end_date'=>$end,
         'max_participants'=>$faker->numberBetween($min =10, $max = 50),
-        'price'=>$faker->numberBetween( $min = 20, $max = 200),
+        'price'=>$faker->numberBetween( $min = 110, $max = 400),
         'due_date'=>$faker->dateTimeBetween('now',$start),
+        'cost'=>$faker->numberBetween( $min = 20, $max = 100),
         'agency_id'=>Agency::all()->random()->id
 
         

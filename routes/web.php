@@ -46,7 +46,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->put('/trips/{trip}', 'TripController@update');
             $router->patch('/trips/{trip}', 'TripController@update');
             $router->delete('/trips/{trip}', 'TripController@destroy');
-
+            
             //Customers
             $router->get('/customers', 'CustomerController@index');
 
@@ -56,8 +56,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->delete('/agencies/{agency}', 'AgencyController@destroy');
             $router->put('/agencies/{agency}', 'AgencyController@update');
             $router->patch('/agencies/{agency}', 'AgencyController@update');
-            $router->get('/agencies/participants/{trip}','AgencyController@numberOfParticipantsOnTrip');
             $router->get('/agencies/reports/previous-reports','AgencyController@getPreviousTripsReports');
+            $router->post('/agencies/send/offer-email','AgencyController@sendOffers');
         });
 
 

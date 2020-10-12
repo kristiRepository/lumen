@@ -4,7 +4,7 @@ namespace App;
 
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Facades\Auth;
 
 class Agency extends Model
 {
@@ -36,6 +36,11 @@ class Agency extends Model
     public function trips(){
 
         return $this->hasMany(Trip::class);
+    }
+
+    public function hasTrip($trip){
+        
+        return Auth::user()->agency->trips->contains('id',$trip->id);
     }
 
 

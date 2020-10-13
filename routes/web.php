@@ -10,12 +10,19 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
+$router->get('test','PaymentController@test');  
 
 $router->group(['prefix' => 'api'], function () use ($router) {
 
+
+$router->post('customers/paypal/create-payment','PaymentController@create_payment');
+$router->post('customers/paypal/execute-payment','PaymentController@execute_payment');
+    
+  
+
     //Authentication routes
-    $router->post('/auth/customer_signup', 'AuthController@register_customer');
-    $router->post('/auth/agency_signup', 'AuthController@register_agency');
+    $router->post('/auth/customer_signup', 'AuthController@registerCustomer');
+    $router->post('/auth/agency-signup', 'AuthController@register_agency');
     $router->post('/auth/login', 'AuthController@login');
 
     $router->get('email/verify/{user_id}','AuthController@verify');
@@ -71,6 +78,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         //Restricted for customers
         $router->group(['middleware' => 'is_customer'], function () use ($router) {
+
+           
+            
+
 
 
             //Login review

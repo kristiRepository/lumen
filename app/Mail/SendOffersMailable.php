@@ -30,6 +30,7 @@ class SendOffersMailable extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.offers',['body',$this->body]);
+        return $this->view('mail.offers',['body',$this->body])
+                    ->subject('New offers');
     }
 }

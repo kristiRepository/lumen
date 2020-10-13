@@ -778,8 +778,8 @@
     },
     {
         "name": "illuminate/container",
-        "version": "v7.28.3",
-        "version_normalized": "7.28.3.0",
+        "version": "v7.28.4",
+        "version_normalized": "7.28.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/illuminate/container.git",
@@ -827,8 +827,8 @@
     },
     {
         "name": "illuminate/contracts",
-        "version": "v7.28.3",
-        "version_normalized": "7.28.3.0",
+        "version": "v7.28.4",
+        "version_normalized": "7.28.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/illuminate/contracts.git",
@@ -1502,8 +1502,8 @@
     },
     {
         "name": "illuminate/support",
-        "version": "v7.28.3",
-        "version_normalized": "7.28.3.0",
+        "version": "v7.28.4",
+        "version_normalized": "7.28.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/illuminate/support.git",
@@ -2295,17 +2295,17 @@
     },
     {
         "name": "nesbot/carbon",
-        "version": "2.41.0",
-        "version_normalized": "2.41.0.0",
+        "version": "2.41.3",
+        "version_normalized": "2.41.3.0",
         "source": {
             "type": "git",
             "url": "https://github.com/briannesbitt/Carbon.git",
-            "reference": "8690b13ad4da6d54d692afea15aab30b36fee52e"
+            "reference": "e148788eeae9b9b7b87996520358b86faad37b52"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/8690b13ad4da6d54d692afea15aab30b36fee52e",
-            "reference": "8690b13ad4da6d54d692afea15aab30b36fee52e",
+            "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/e148788eeae9b9b7b87996520358b86faad37b52",
+            "reference": "e148788eeae9b9b7b87996520358b86faad37b52",
             "shasum": ""
         },
         "require": {
@@ -2324,7 +2324,7 @@
             "phpunit/phpunit": "^7.5 || ^8.0",
             "squizlabs/php_codesniffer": "^3.4"
         },
-        "time": "2020-10-04T09:11:05+00:00",
+        "time": "2020-10-12T20:36:09+00:00",
         "bin": [
             "bin/carbon"
         ],
@@ -2372,6 +2372,16 @@
             "date",
             "datetime",
             "time"
+        ],
+        "funding": [
+            {
+                "url": "https://opencollective.com/Carbon",
+                "type": "open_collective"
+            },
+            {
+                "url": "https://tidelift.com/funding/github/packagist/nesbot/carbon",
+                "type": "tidelift"
+            }
         ]
     },
     {
@@ -2531,6 +2541,58 @@
             "pseudorandom",
             "random"
         ]
+    },
+    {
+        "name": "paypal/rest-api-sdk-php",
+        "version": "1.14.0",
+        "version_normalized": "1.14.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/paypal/PayPal-PHP-SDK.git",
+            "reference": "72e2f2466975bf128a31e02b15110180f059fc04"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/paypal/PayPal-PHP-SDK/zipball/72e2f2466975bf128a31e02b15110180f059fc04",
+            "reference": "72e2f2466975bf128a31e02b15110180f059fc04",
+            "shasum": ""
+        },
+        "require": {
+            "ext-curl": "*",
+            "ext-json": "*",
+            "php": ">=5.3.0",
+            "psr/log": "^1.0.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.8.35"
+        },
+        "time": "2019-01-04T20:04:25+00:00",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "PayPal": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "PayPal",
+                "homepage": "https://github.com/paypal/rest-api-sdk-php/contributors"
+            }
+        ],
+        "description": "PayPal's PHP SDK for REST APIs",
+        "homepage": "http://paypal.github.io/PayPal-PHP-SDK/",
+        "keywords": [
+            "payments",
+            "paypal",
+            "rest",
+            "sdk"
+        ],
+        "abandoned": true
     },
     {
         "name": "phar-io/manifest",

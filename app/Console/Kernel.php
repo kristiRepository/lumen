@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     {
         
         $schedule->command('delete:customers')
-                 ->dailyAt('08:00');
+                 ->everyMinute();
 
     }
 }

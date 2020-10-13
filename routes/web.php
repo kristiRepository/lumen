@@ -18,7 +18,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('/auth/agency_signup', 'AuthController@register_agency');
     $router->post('/auth/login', 'AuthController@login');
 
+    $router->get('email/verify/{user_id}','AuthController@verify');
+    $router->get('email/resend','AuthController@resend');
+
+
     //Logout trip
+    $router->get('/test','AgencyController@test');
     $router->get('/trips', 'TripController@index');
     $router->get('/trips/{trip}', 'TripController@show');
 

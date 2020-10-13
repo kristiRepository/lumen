@@ -7,9 +7,11 @@ use App\Http\Resources\Agencies\AgencyCollection;
 use App\Http\Resources\Agencies\AgencyResource;
 use App\Jobs\SendOfferJob;
 use App\Traits\ApiResponser;
+use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class AgencyController extends Controller
@@ -22,18 +24,18 @@ class AgencyController extends Controller
      */
     public function __construct()
     {
-        
     }
 
-    public function index(){
+    public function index()
+    {
 
         return AgencyCollection::collection(Agency::paginate(10));
-
     }
 
 
 
-    public function profile($agency){
+    public function profile($agency)
+    {
 
         $agency = Agency::findOrFail($agency);
 
@@ -43,38 +45,35 @@ class AgencyController extends Controller
         } else {
             return $this->errorResponse('You have not access to this data', 401);
         }
-        
     }
 
-    public function update(Request $request,$agency){
-       
-        $agency=Agency::findOrFail($agency);
-        
+    public function update(Request $request, $agency)
+    {
+
+        $agency = Agency::findOrFail($agency);
+
         if (Gate::allows('agency-profile', $agency)) {
-            $this->validate($request,$agency->user->updateRulesAgency);
+            $this->validate($request, $agency->user->updateRulesAgency);
             $agency->fill($request->all());
 
-            if($agency->isClean()){
-                return $this->errorResponse('At least one value must change',Response::HTTP_UNPROCESSABLE_ENTITY);
+            if ($agency->isClean()) {
+                return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-    
-            $agency->save();
-    
-            return $this->successResponse($agency);
 
-        }else{
+            $agency->save();
+
+            return $this->successResponse($agency);
+        } else {
             return $this->errorResponse('You have not access to this data', 401);
         }
-       
-
-
     }
 
-    public function destroy($agency){
+    public function destroy($agency)
+    {
 
         $agency = Agency::findOrFail($agency);
         if (Gate::allows('agency-profile', $agency)) {
-            
+
             $agency->user->delete();
             $agency->delete();
 
@@ -82,93 +81,98 @@ class AgencyController extends Controller
         } else {
             return $this->errorResponse('You have not access to this data', 401);
         }
-
-
     }
 
 
 
-    public function getPreviousTripsReports(){
+    public function getPreviousTripsReports()
+    {
 
-        $data=Auth::user()->agency->trips()->where('start_date','<',date('Y-m-d'))->get();
-        
-        $trips=[];
-        foreach($data as $trip){
-            $trips[]=$trip->title;
-        } 
+        $data = Auth::user()->agency->trips()->where('start_date', '<', date('Y-m-d'))->get();
 
-        $ratings=[];
-        foreach($data as $trip){
+        $trips = [];
+        foreach ($data as $trip) {
+            $trips[] = $trip->title;
+        }
 
-           $sum=0;
-           if($trip->reviews->count()>0){
-           foreach($trip->reviews as $review){
-               $sum=$sum+$review->rating;
-           }
-           $rating_per_trip=$sum/$trip->reviews->count();
-        
-           $ratings[$trip->title]=$rating_per_trip;}
-           else{
-            $ratings[$trip->title]='This trip has no ratings yet';
-           }
+        $ratings = [];
+        foreach ($data as $trip) {
+
+            $sum = 0;
+            if ($trip->reviews->count() > 0) {
+                foreach ($trip->reviews as $review) {
+                    $sum = $sum + $review->rating;
+                }
+                $rating_per_trip = $sum / $trip->reviews->count();
+
+                $ratings[$trip->title] = $rating_per_trip;
+            } else {
+                $ratings[$trip->title] = 'This trip has no ratings yet';
+            }
         }
 
 
-        $participants_per_trip=[];
+        $participants_per_trip = [];
 
-        foreach($data as $trip){
-           
-            $participants_per_trip[$trip->title]=$trip->numberOfParticipantsOnTrip($trip->id);
+        foreach ($data as $trip) {
+
+            $participants_per_trip[$trip->title] = $trip->numberOfParticipantsOnTrip($trip->id);
         }
 
-        $total_participants=0;
-        foreach($data as $trip){
-            $total_participants=$total_participants+$trip->numberOfParticipantsOnTrip($trip->id);
+        $total_participants = 0;
+        foreach ($data as $trip) {
+            $total_participants = $total_participants + $trip->numberOfParticipantsOnTrip($trip->id);
         }
 
-        $earnings_per_trip=[];
-        foreach($data as $trip){
-            $earnings_per_trip[$trip->title]=$trip->numberOfParticipantsOnTrip($trip->id)*$trip->price;
+        $earnings_per_trip = [];
+        foreach ($data as $trip) {
+            $earnings_per_trip[$trip->title] = $trip->numberOfParticipantsOnTrip($trip->id) * $trip->price;
         }
 
-       
-        $total_earnings=0;
-        foreach($data as $trip){
-            $total_earnings=$total_earnings + $trip->numberOfParticipantsOnTrip($trip->id)*$trip->price;
+
+        $total_earnings = 0;
+        foreach ($data as $trip) {
+            $total_earnings = $total_earnings + $trip->numberOfParticipantsOnTrip($trip->id) * $trip->price;
         }
 
-        $total_cost=0;
-        foreach($data as $trip){
-            $total_cost=$total_cost + $trip->cost;
+        $total_cost = 0;
+        foreach ($data as $trip) {
+            $total_cost = $total_cost + $trip->cost;
         }
 
-        $profit=$total_earnings-$total_cost;
+        $profit = $total_earnings - $total_cost;
 
-        $report=[
-            'my_trips'=>$trips,
-            'participants_per_trip'=>$participants_per_trip,
-            'total_participants'=>$total_participants,
-            'ratings_per_trip'=>$ratings,
-            'earnings_per_trip'=>$earnings_per_trip,
-            'total_earnings'=>$total_earnings,
-            'total_cost'=>$total_cost,
-            'profit'=>$profit
+        $report = [
+            'my_trips' => $trips,
+            'participants_per_trip' => $participants_per_trip,
+            'total_participants' => $total_participants,
+            'ratings_per_trip' => $ratings,
+            'earnings_per_trip' => $earnings_per_trip,
+            'total_earnings' => $total_earnings,
+            'total_cost' => $total_cost,
+            'profit' => $profit
         ];
 
-        return $this->successResponse($report,200);
-       
-
+        return $this->successResponse($report, 200);
     }
 
-    public function sendOffers(Request $request){
+    public function sendOffers(Request $request)
+    {
 
-        
         $this->dispatch(new SendOfferJob($request->all()));
-        
-       
     }
 
-   
+    public function test(){
+        $trips=Trip::where('due_date','<',date('Y-m-d'))->get();
+      
+        if($trips != NULL){
+            foreach($trips as $trip){
+                DB::table('customer_trip')->where('trip_id','=',$trip->id)->where('paid','=',NULL)->delete();
+            }
+        }
 
-    
+        // dd(Trip::where('due_date','>',date('Y-m-d'))->get());
+
+        
+    }
 }

@@ -75,6 +75,7 @@ class AuthController extends Controller
             $agency->address = $request->address;
             $agency->web = $request->web;
             $user->agency()->save($agency);
+            $user->sendEmailVerificationNotification();
 
             return $this->successResponse($user->load('agency'));
         } catch (Exception $e) {
@@ -123,4 +124,6 @@ class AuthController extends Controller
             return $this->errorResponse('Old password is not correct', 401);
         }
     }
+
+
 }

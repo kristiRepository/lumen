@@ -16,7 +16,7 @@ class Agency extends Model
      * @var array
      */
     protected $fillable = [
-        'company_name','address','web','user_id'
+        'company_name', 'address', 'web', 'user_id'
     ];
 
     /**
@@ -24,26 +24,39 @@ class Agency extends Model
      *
      * @var array
      */
-    protected $hidden = [
-        
-    ];
+    protected $hidden = [];
 
-    public function user(){
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function user()
+    {
 
         return $this->belongsTo(User::class);
     }
 
-    public function trips(){
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function trips()
+    {
 
         return $this->hasMany(Trip::class);
     }
 
-    public function hasTrip($trip){
-        
-        return Auth::user()->agency->trips->contains('id',$trip->id);
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return boolean
+     */
+    public function hasTrip($trip)
+    {
+
+        return Auth::user()->agency->trips->contains('id', $trip->id);
     }
-
-
-
-   
 }

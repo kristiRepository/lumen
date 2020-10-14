@@ -23,7 +23,8 @@ class AuthController extends Controller
     {
     }
 
-    public function register_customer(Request $request)
+   
+    public function registerCustomer(Request $request)
     {
 
         $this->validate($request, User::$storeRulesCustomer);
@@ -54,7 +55,8 @@ class AuthController extends Controller
     }
 
 
-    public function register_agency(Request $request)
+   
+    public function registerAgency(Request $request)
     {
 
         $this->validate($request, User::$storeRulesAgency);
@@ -84,6 +86,12 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
     public function login(Request $request)
     {
 
@@ -107,7 +115,13 @@ class AuthController extends Controller
         }
     }
 
-    public function change_password(Request $request)
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function changePassword(Request $request)
     {
 
 
@@ -124,6 +138,4 @@ class AuthController extends Controller
             return $this->errorResponse('Old password is not correct', 401);
         }
     }
-
-
 }

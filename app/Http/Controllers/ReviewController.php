@@ -23,6 +23,12 @@ class ReviewController extends Controller
     {
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return void
+     */
     public function index($trip)
     {
 
@@ -30,6 +36,13 @@ class ReviewController extends Controller
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param [type] $trip_id
+     * @return void
+     */
     public function store(Request $request, $trip_id)
     {
 
@@ -56,6 +69,12 @@ class ReviewController extends Controller
         return $this->successResponse($review, Response::HTTP_CREATED);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $review
+     * @return void
+     */
     public function show($review)
     {
 
@@ -64,6 +83,13 @@ class ReviewController extends Controller
         return $this->successResponse(new ReviewResource($review));
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param [type] $review
+     * @return void
+     */
     public function update(Request $request, $review)
     {
 
@@ -81,6 +107,12 @@ class ReviewController extends Controller
         return $this->successResponse($review);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $review
+     * @return void
+     */
     public function destroy($review)
     {
 

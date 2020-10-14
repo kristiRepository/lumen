@@ -12,27 +12,42 @@ use PayPal\Api\Payment;
 use PayPal\Api\RedirectUrls;
 use PayPal\Api\Transaction;
 use App\Traits\ApiResponser;
+use App\Trip;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use PayPal\Api\PaymentExecution;
 
 class PaymentController extends Controller
 {
     use ApiResponser;
 
+    /**
+     * Undocumented function
+     */
     public function __construct()
     {
     }
 
 
-    public function createPayment()
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function createPayment(Request $request)
     {
+         $trip = Trip::findOrFail($request->trip);
 
+         if (!auth()->user()->customer->registeredForTrip($request->trip)) {
 
+             return $this->errorResponse('You are not registered for this trip', 403);
+         }
+ 
         $apiContext = new \PayPal\Rest\ApiContext(
             new OAuthTokenCredential(
-                'AViakS56MjelJOW0VHU0nzbYcHs4AravkiLnpaiwyDV9lmWO56e9EeXyzpBeYxRi5Gq0-MSqUad8hXBq',
-                'EIRiX0eSKYG9UUC-un5FPR2EbojP9r94783kD2cpwZCuArzgOgABIjUOurxNbnJjfYMjpJ1IicGcNLFR'
+                config('payment.paypal_public'),
+                config('payment.paypal_secret')
             )
         );
 
@@ -41,35 +56,25 @@ class PaymentController extends Controller
 
 
         $item1 = new Item();
-        $item1->setName('')
+        $item1->setName($trip->title)
             ->setCurrency('USD')
             ->setQuantity(1)
-            ->setSku("123123") // Similar to `item_number` in Classic API
-            ->setPrice(7.5);
-        $item2 = new Item();
-        $item2->setName('Granola bars')
-            ->setCurrency('USD')
-            ->setQuantity(5)
-            ->setSku("321321") // Similar to `item_number` in Classic API
-            ->setPrice(2);
+            ->setSku($trip->id) // Similar to `item_number` in Classic API
+            ->setPrice($trip->price);
 
         $itemList = new ItemList();
-        $itemList->setItems(array($item1, $item2));
+        $itemList->setItems(array($item1));
 
-        $details = new Details();
-        $details->setShipping(1.2)
-            ->setTax(1.3)
-            ->setSubtotal(17.50);
 
         $amount = new Amount();
         $amount->setCurrency("USD")
-            ->setTotal(20)
-            ->setDetails($details);
+            ->setTotal($trip->price);
+            
 
         $transaction = new Transaction();
         $transaction->setAmount($amount)
             ->setItemList($itemList)
-            ->setDescription("Payment description")
+            ->setDescription("Payment for trip")
             ->setInvoiceNumber(uniqid());
 
         $redirectUrls = new RedirectUrls();
@@ -100,16 +105,16 @@ class PaymentController extends Controller
      * @param Request $request
      * @return void
      */
-    public function execute_payment(Request $request)
+    public function executePayment(Request $request)
     {
+        
 
         $apiContext = new \PayPal\Rest\ApiContext(
             new OAuthTokenCredential(
-                'AViakS56MjelJOW0VHU0nzbYcHs4AravkiLnpaiwyDV9lmWO56e9EeXyzpBeYxRi5Gq0-MSqUad8hXBq',
-                'EIRiX0eSKYG9UUC-un5FPR2EbojP9r94783kD2cpwZCuArzgOgABIjUOurxNbnJjfYMjpJ1IicGcNLFR'
+                config('payment.paypal_public'),
+                config('payment.paypal_secret')
             )
         );
-
 
         $paymentId = $request->paymentID;
         $payment = Payment::get($paymentId, $apiContext);
@@ -123,6 +128,7 @@ class PaymentController extends Controller
             return $this->errorResponse($ex->getMessage(), 403);
         }
 
+        DB::table('customer_trip')->where('customer_id','=',$request->customer)->where('trip_id','=',$request->trip)->paid=true;
 
         return $result;
     }

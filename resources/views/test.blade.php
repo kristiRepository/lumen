@@ -23,6 +23,7 @@
       return actions.request.post('/api/customers/paypal/execute-payment', {
         paymentID: data.paymentID,
         payerID:   data.payerID
+       
       })
         .then(function(res) {
           // 3. Show the buyer a confirmation message.

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Mail;
 
 class SendOfferJob extends Job implements ShouldQueue
 {
-    
+
     use SerializesModels;
     /**
      * Create a new job instance.
@@ -30,8 +30,8 @@ class SendOfferJob extends Job implements ShouldQueue
      */
     public function handle()
     {
-        
-       
+
+
         foreach ($this->data['customers'] as $customer) {
             Mail::to($customer)->send(new SendOffersMailable($this->data['body']));
         }

@@ -8,17 +8,23 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class AgencyResource extends JsonResource
 {
+    /**
+     * Undocumented function
+     *
+     * @param [type] $request
+     * @return void
+     */
     public function toArray($request)
     {
         return [
-            'company_name'=>$this->company_name,
-            'address'=>$this->address,
-            'email'=>$this->user->email,
-            'web'=>$this->web,
-            'username'=>$this->user->username,
-            'phone_number'=>$this->user->phone_number
+            'company_name' => $this->company_name,
+            'address' => $this->address,
+            'email' => $this->user->email,
+            'web' => $this->web,
+            'username' => $this->user->username,
+            'phone_number' => $this->user->phone_number
 
-            
-         ];
+
+        ];
     }
 }

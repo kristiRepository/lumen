@@ -27,7 +27,6 @@ class CreateTripsTable extends Migration
             $table->timestamps();
 
             $table->foreign('agency_id')->references('id')->on('agencies')->onDelete('cascade');
-
         });
     }
 

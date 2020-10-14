@@ -21,79 +21,103 @@ class TripController extends Controller
      */
     public function __construct()
     {
-        
     }
 
-    public function index(Request $request){
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function index(Request $request)
+    {
 
-    $trips = QueryBuilder::for(Trip::class)
-            ->allowedFilters(['title','destination','max_price','upcoming'])
+        $trips = QueryBuilder::for(Trip::class)
+            ->allowedFilters(['title', 'destination', 'max_price', 'upcoming'])
             ->paginate(10);
 
-           
 
-     return TripCollection::collection($trips);
-     
 
+        return TripCollection::collection($trips);
     }
 
 
-    public function store(Request $request){
-        
-        $this->validate($request,Trip::$storeRules);
-        $trip=new Trip;
-        $trip->title=$request->title;
-        $trip->destination=$request->destination;
-        $trip->start_date=$request->start_date;
-        $trip->end_date=$request->end_date;
-        $trip->max_participants=$request->max_participants;
-        $trip->price=$request->price;
-        $trip->due_date=$request->due_date;
-        $trip->cost=$request->cost;
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function store(Request $request)
+    {
 
-         Auth::user()->agency->trips()->save($trip);
+        $this->validate($request, Trip::$storeRules);
+        $trip = new Trip;
+        $trip->title = $request->title;
+        $trip->destination = $request->destination;
+        $trip->start_date = $request->start_date;
+        $trip->end_date = $request->end_date;
+        $trip->max_participants = $request->max_participants;
+        $trip->price = $request->price;
+        $trip->due_date = $request->due_date;
+        $trip->cost = $request->cost;
 
-        return $this->successResponse($trip,Response::HTTP_CREATED);
+        Auth::user()->agency->trips()->save($trip);
 
-
+        return $this->successResponse($trip, Response::HTTP_CREATED);
     }
 
-    public function show($trip){
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return void
+     */
+    public function show($trip)
+    {
 
-        $trip=Trip::findOrFail($trip);
-        
+        $trip = Trip::findOrFail($trip);
+
         return $this->successResponse(new TripResource($trip));
     }
 
-    public function update(Request $request,$trip){
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param [type] $trip
+     * @return void
+     */
+    public function update(Request $request, $trip)
+    {
 
-        $this->validate($request,Trip::$updateRules);
-        $trip=Trip::findOrFail($trip);
+        $this->validate($request, Trip::$updateRules);
+        $trip = Trip::findOrFail($trip);
 
         $trip->fill($request->all());
 
-        if($trip->isClean()){
-            return $this->errorResponse('At least one value must change',Response::HTTP_UNPROCESSABLE_ENTITY);
+        if ($trip->isClean()) {
+            return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $trip->save();
 
         return $this->successResponse($trip);
-
-
     }
 
-    public function destroy($trip){
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return void
+     */
+    public function destroy($trip)
+    {
 
-        $trip=Trip::findOrFail($trip);
+        $trip = Trip::findOrFail($trip);
 
         $trip->delete();
 
         return $this->successResponse($trip);
     }
-
-    
-
-
-    
 }

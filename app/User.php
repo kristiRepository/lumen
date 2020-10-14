@@ -14,7 +14,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
 class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
 {
 
-    use Authenticatable,Authorizable;
+    use Authenticatable, Authorizable;
 
     /**
      * The attributes that are mass assignable.
@@ -22,7 +22,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'username','password','email','role','phone_number'
+        'username', 'password', 'email', 'role', 'phone_number'
     ];
 
     /**
@@ -34,92 +34,139 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'password'
     ];
 
-    public function customer(){
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function customer()
+    {
 
         return $this->hasOne(Customer::class);
     }
 
-    public function agency(){
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function agency()
+    {
 
         return $this->hasOne(Agency::class);
     }
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     public static $storeRulesCustomer = [
 
         'username' => 'required|min:6|unique:users,username',
         'password' => 'required',
-        'email'=>'required|email|unique:users,email',
-        'phone_number'=>'required|digits:10',
+        'email' => 'required|email|unique:users,email',
+        'phone_number' => 'required|digits:10',
         'name' => 'required',
         'surname' => 'required',
         'gender' => 'required|in:male,female',
-        'age' =>'required|numeric|between:10,90',
-        
+        'age' => 'required|numeric|between:10,90',
+
 
     ];
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     public static $storeRulesAgency = [
 
         'username' => 'required|min:6|unique:users,username',
         'password' => 'required',
-        'email'=>'required|email|unique:users,email',
-        'phone_number'=>'required|digits:10',
+        'email' => 'required|email|unique:users,email',
+        'phone_number' => 'required|digits:10',
         'company_name' => 'required',
         'address' => 'required',
-        'web'=>'required|url',
-        
-        
+        'web' => 'required|url',
 
     ];
 
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     public $updateRulesCustomer = [
 
         'username' => 'min:6|unique:users,username',
-        'email'=>'email|unique:users,email',
-        'phone_number'=>'digits:10',
+        'email' => 'email|unique:users,email',
+        'phone_number' => 'digits:10',
         'name' => '',
         'surname' => '',
         'gender' => 'in:male,female',
         'age' => 'numeric|between:10,90',
-        'user_id'=>'forbidden'
-        
+        'user_id' => 'forbidden'
+
     ];
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     public $updateRulesAgency = [
 
         'username' => 'min:6|unique:users,username',
-        'email'=>'email|unique:users,email',
-        'phone_number'=>'digits:10',
+        'email' => 'email|unique:users,email',
+        'phone_number' => 'digits:10',
         'company_name' => '',
         'address' => '',
         'web' => 'url',
-        'user_id'=>'forbidden'
-        
+        'user_id' => 'forbidden'
+
     ];
 
-    public static $loginRules=[
-        'email'=>'required|email',
-        'password'=>'required',
-        'role'=>'in:agency,customer'
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
+    public static $loginRules = [
+        'email' => 'required|email',
+        'password' => 'required',
+        'role' => 'in:agency,customer'
     ];
 
-    public static $changePasswordRules=[
-        'old_password'=>'required',
-        'new_password'=>'required',
-        'confirm_password'=>'required|same:new_password'
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
+    public static $changePasswordRules = [
+        'old_password' => 'required',
+        'new_password' => 'required',
+        'confirm_password' => 'required|same:new_password'
     ];
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function getJWTCustomClaims()
     {
         return [];
     }
-
-
-
 }

@@ -20,11 +20,11 @@ use Faker\Generator as Faker;
 $factory->define(Customer::class, function (Faker $faker) {
 
     return [
-        'name'=>$faker->name,
-        'surname'=>$faker->word,
-        'gender'=>$faker->randomElement(['male', 'female']),
-        'age'=>$faker->numberBetween(10,90),
-        'user_id'=>User::all()->random()->id
+        'name' => $faker->name,
+        'surname' => $faker->word,
+        'gender' => $faker->randomElement(['male', 'female']),
+        'age' => $faker->numberBetween(10, 90),
+        'user_id' => User::all()->random()->id
 
-     ];
+    ];
 });

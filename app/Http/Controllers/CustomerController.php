@@ -24,6 +24,11 @@ class CustomerController extends Controller
     {
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function index()
     {
 
@@ -32,6 +37,12 @@ class CustomerController extends Controller
 
 
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $customer
+     * @return void
+     */
     public function profile($customer)
     {
 
@@ -45,36 +56,45 @@ class CustomerController extends Controller
         }
     }
 
-    public function update(Request $request,$customer)
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param [type] $customer
+     * @return void
+     */
+    public function update(Request $request, $customer)
     {
 
-        $customer=Customer::findOrFail($customer);
+        $customer = Customer::findOrFail($customer);
         if (Gate::allows('customer-profile', $customer)) {
-            $this->validate($request,$customer->user->updateRulesCustomer);
+            $this->validate($request, $customer->user->updateRulesCustomer);
             $customer->fill($request->all());
 
-            if($customer->isClean()){
-                return $this->errorResponse('At least one value must change',Response::HTTP_UNPROCESSABLE_ENTITY);
+            if ($customer->isClean()) {
+                return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-    
-            $customer->save();
-    
-            return $this->successResponse($customer);
 
-        }else{
+            $customer->save();
+
+            return $this->successResponse($customer);
+        } else {
             return $this->errorResponse('You have not access to this data', 401);
         }
-
-
-
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $customer
+     * @return void
+     */
     public function destroy($customer)
-    {  
+    {
         $customer = Customer::findOrFail($customer);
 
         if (Gate::allows('customer-profile', $customer)) {
-            
+
             $customer->user->delete();
             $customer->delete();
 
@@ -85,17 +105,24 @@ class CustomerController extends Controller
     }
 
 
-    public function participate_on_trip(Request $request){
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function participateOnTrip(Request $request)
+    {
 
         $trip = Trip::findOrFail($request->trip);
 
-        if($trip->isClosed()){
-            return $this->errorResponse('This trip is closed',401);
+        if ($trip->isClosed()) {
+            return $this->errorResponse('This trip is closed', 401);
         }
 
-        if($trip->alreadyRegistered($request->trip)){
+        if ($trip->alreadyRegistered($request->trip)) {
 
-            return $this->errorResponse('You have already registered for this trip',401);
+            return $this->errorResponse('You have already registered for this trip', 401);
         }
 
 
@@ -104,26 +131,29 @@ class CustomerController extends Controller
     }
 
 
-    public function cancel_trip(Request $request){
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function cancelTrip(Request $request)
+    {
 
         $trip = Trip::findOrFail($request->trip);
 
-        if($trip->isClosed()){
-            return $this->errorResponse('This trip is closed',401);
+        if ($trip->isClosed()) {
+            return $this->errorResponse('This trip is closed', 401);
         }
 
-        if(! $trip->alreadyRegistered($request->trip)){
+        if (!$trip->alreadyRegistered($request->trip)) {
 
-            return $this->errorResponse('You are not registered for this trip',401);
+            return $this->errorResponse('You are not registered for this trip', 401);
         }
 
         Auth()->user()->customer->trips()->detach($trip);
         return $this->successResponse('You\'ve succesfully cancelled this trip');
-
     }
 
-
-    
-
-    
+   
 }

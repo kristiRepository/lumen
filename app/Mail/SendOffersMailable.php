@@ -7,9 +7,9 @@ use Illuminate\Mail\Mailable;
 
 
 
-class SendOffersMailable extends Mailable 
+class SendOffersMailable extends Mailable
 {
-    
+
 
     /**
      * Create a new message instance.
@@ -17,10 +17,10 @@ class SendOffersMailable extends Mailable
      * @return void
      */
 
-     public $body;
+    public $body;
     public function __construct($body)
     {
-        $this->body=$body;
+        $this->body = $body;
     }
 
     /**
@@ -30,7 +30,7 @@ class SendOffersMailable extends Mailable
      */
     public function build()
     {
-        return $this->view('mail.offers',['body',$this->body])
-                    ->subject('New offers');
+        return $this->view('mail.offers', ['body', $this->body])
+            ->subject('New offers');
     }
 }

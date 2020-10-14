@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-       Commands\CustomersHaveNotPaidCommand::class,
+        Commands\CustomersHaveNotPaidCommand::class,
     ];
 
     /**
@@ -26,9 +26,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        
-        $schedule->command('delete:customers')
-                 ->everyMinute();
 
+        $schedule->command('delete:customers')
+            ->dailyAt('08:00');
     }
 }

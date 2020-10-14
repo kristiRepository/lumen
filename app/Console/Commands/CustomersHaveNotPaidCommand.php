@@ -31,19 +31,18 @@ class CustomersHaveNotPaidCommand extends Command
 
 
     /**
-     * Execute the console command.
+     * Undocumented function
      *
-     * @return mixed
-     */
+     * @return void
+     */ 
     public function handle()
     {
-        $trips=Trip::where('due_date','<',date('Y-m-d'))->get();
-      
-        if($trips != NULL){
-            foreach($trips as $trip){
-                DB::table('customer_trip')->where('trip_id','=',$trip->id)->where('paid','=',NULL)->delete();
+        $trips = Trip::where('due_date', '<', date('Y-m-d'))->get();
+
+        if ($trips != NULL) {
+            foreach ($trips as $trip) {
+                DB::table('customer_trip')->where('trip_id', '=', $trip->id)->where('paid', '=', NULL)->delete();
             }
         }
-     
     }
 }

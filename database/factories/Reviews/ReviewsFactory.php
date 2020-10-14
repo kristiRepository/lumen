@@ -21,9 +21,9 @@ use Faker\Generator as Faker;
 $factory->define(Review::class, function (Faker $faker) {
 
     return [
-        'trip_id'=>Trip::all()->random()->id,
-        'customer_id'=>Customer::all()->random()->id,
-        'body'=>$faker->text,
-        'rating'=>$faker->numberBetween(1,5)
-     ];
+        'trip_id' => Trip::all()->random()->id,
+        'customer_id' => Customer::all()->random()->id,
+        'body' => $faker->text,
+        'rating' => $faker->numberBetween(1, 5)
+    ];
 });

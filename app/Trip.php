@@ -27,11 +27,21 @@ class Trip extends Model
     protected $hidden = [];
 
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function customers()
     {
         return $this->belongsToMany(Customer::class);
     }
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     public static $storeRules = [
         'title' => 'required',
         'destination' => 'required',
@@ -42,6 +52,11 @@ class Trip extends Model
         'due_date' => 'required|date|date_format:Y-m-d|after:today|before:start_date'
     ];
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     public static $updateRules = [
         'title' => '',
         'destination' => '',
@@ -53,6 +68,11 @@ class Trip extends Model
     ];
 
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function reviews()
     {
 
@@ -60,6 +80,11 @@ class Trip extends Model
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function agency()
     {
 
@@ -68,12 +93,23 @@ class Trip extends Model
 
 
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isClosed()
     {
         return $this->start_date < date('Y-m-d');
     }
 
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return void
+     */
     public function alreadyRegistered($trip)
     {
 
@@ -88,24 +124,25 @@ class Trip extends Model
                 }
             }
         }
-        
+
         return false;
     }
 
 
-    public function numberOfParticipantsOnTrip($trip){
-       
-        
-        $trip=$this->findOrFail($trip);
-        
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return void
+     */
+    public function numberOfParticipantsOnTrip($trip)
+    {
+        $trip = $this->findOrFail($trip);
 
-
-        if(! $trip->isClosed()){
+        if (!$trip->isClosed()) {
             return 0;
+        } else {
+            return $trip->customers->count();
         }
-        else{
-             return $trip->customers->count();
-        }
-        
     }
 }

@@ -26,6 +26,11 @@ class AgencyController extends Controller
     {
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function index()
     {
 
@@ -34,6 +39,12 @@ class AgencyController extends Controller
 
 
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $agency
+     * @return void
+     */
     public function profile($agency)
     {
 
@@ -47,6 +58,14 @@ class AgencyController extends Controller
         }
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @param [type] $agency
+     * @return void
+     */
     public function update(Request $request, $agency)
     {
 
@@ -68,6 +87,12 @@ class AgencyController extends Controller
         }
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $agency
+     * @return void
+     */
     public function destroy($agency)
     {
 
@@ -84,7 +109,11 @@ class AgencyController extends Controller
     }
 
 
-
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function getPreviousTripsReports()
     {
 
@@ -156,23 +185,35 @@ class AgencyController extends Controller
         return $this->successResponse($report, 200);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
     public function sendOffers(Request $request)
     {
 
         $this->dispatch(new SendOfferJob($request->all()));
     }
 
-    public function test(){
-        $trips=Trip::where('due_date','<',date('Y-m-d'))->get();
-      
-        if($trips != NULL){
-            foreach($trips as $trip){
-                DB::table('customer_trip')->where('trip_id','=',$trip->id)->where('paid','=',NULL)->delete();
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function test()
+    {
+        $trips = Trip::where('due_date', '<', date('Y-m-d'))->get();
+
+        if ($trips != NULL) {
+            foreach ($trips as $trip) {
+                DB::table('customer_trip')->where('trip_id', '=', $trip->id)->where('paid', '=', NULL)->delete();
             }
         }
 
-        // dd(Trip::where('due_date','>',date('Y-m-d'))->get());
 
-        
     }
+    
 }

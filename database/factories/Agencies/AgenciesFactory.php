@@ -17,13 +17,14 @@ use Faker\Generator as Faker;
 |
 */
 
+
 $factory->define(Agency::class, function (Faker $faker) {
 
     return [
-        'company_name'=>$faker->word,
-        'address'=>$faker->word,
-        'web'=>$faker->url,
-        'user_id'=>User::all()->random()->id
+        'company_name' => $faker->word,
+        'address' => $faker->word,
+        'web' => $faker->url,
+        'user_id' => User::all()->random()->id
 
-     ];
+    ];
 });

@@ -10,6 +10,7 @@ use App\Traits\ApiResponser;
 use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -44,17 +45,12 @@ class AgencyController extends Controller
      * @param [type] $agency
      * @return void
      */
-    public function profile($agency)
+    public function profile()
     {
+        $agency = Auth::user()->agency;
 
-        $agency = Agency::findOrFail($agency);
-
-
-        if (Gate::allows('agency-profile', $agency)) {
             return $this->successResponse(new AgencyResource($agency));
-        } else {
-            return $this->errorResponse('You have not access to this data', 401);
-        }
+        
     }
 
 
@@ -65,25 +61,24 @@ class AgencyController extends Controller
      * @param [type] $agency
      * @return void
      */
-    public function update(Request $request, $agency)
+    public function update(Request $request)
     {
 
-        $agency = Agency::findOrFail($agency);
+        $agency = Auth::user()->agency;
 
-        if (Gate::allows('agency-profile', $agency)) {
+        
             $this->validate($request, $agency->user->updateRulesAgency);
             $agency->fill($request->all());
-
+           
             if ($agency->isClean()) {
                 return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
             }
-
+ 
             $agency->save();
+            
 
             return $this->successResponse($agency);
-        } else {
-            return $this->errorResponse('You have not access to this data', 401);
-        }
+       
     }
 
     /**
@@ -92,19 +87,17 @@ class AgencyController extends Controller
      * @param [type] $agency
      * @return void
      */
-    public function destroy($agency)
+    public function destroy()
     {
 
-        $agency = Agency::findOrFail($agency);
-        if (Gate::allows('agency-profile', $agency)) {
+        $agency = Auth::user()->agency;
+        
 
             $agency->user->delete();
             $agency->delete();
 
             return $this->successResponse($agency);
-        } else {
-            return $this->errorResponse('You have not access to this data', 401);
-        }
+        
     }
 
 

@@ -43,17 +43,12 @@ class CustomerController extends Controller
      * @param [type] $customer
      * @return void
      */
-    public function profile($customer)
+    public function profile()
     {
 
-        $customer = Customer::findOrFail($customer);
+        $customer = Auth::user()->customer;
 
-
-        if (Gate::allows('customer-profile', $customer)) {
-            return $this->successResponse(new CustomerResource($customer));
-        } else {
-            return $this->errorResponse('You have not access to this data', 401);
-        }
+        return $this->successResponse(new CustomerResource($customer));
     }
 
     /**
@@ -63,11 +58,11 @@ class CustomerController extends Controller
      * @param [type] $customer
      * @return void
      */
-    public function update(Request $request, $customer)
+    public function update(Request $request)
     {
 
-        $customer = Customer::findOrFail($customer);
-        if (Gate::allows('customer-profile', $customer)) {
+        $customer = Auth::user()->customer;
+        
             $this->validate($request, $customer->user->updateRulesCustomer);
             $customer->fill($request->all());
 
@@ -78,9 +73,7 @@ class CustomerController extends Controller
             $customer->save();
 
             return $this->successResponse($customer);
-        } else {
-            return $this->errorResponse('You have not access to this data', 401);
-        }
+       
     }
 
     /**
@@ -89,19 +82,17 @@ class CustomerController extends Controller
      * @param [type] $customer
      * @return void
      */
-    public function destroy($customer)
+    public function destroy()
     {
-        $customer = Customer::findOrFail($customer);
+        $customer = Auth::user()->customer;
 
-        if (Gate::allows('customer-profile', $customer)) {
+        
 
             $customer->user->delete();
             $customer->delete();
 
             return $this->successResponse($customer);
-        } else {
-            return $this->errorResponse('You have not access to this data', 401);
-        }
+        
     }
 
 
@@ -120,8 +111,8 @@ class CustomerController extends Controller
             return $this->errorResponse('This trip is closed', 401);
         }
 
-        if($trip->isFull()){
-            return $this->errorResponse('This trip has reached the maximum number of participants',401);
+        if ($trip->isFull()) {
+            return $this->errorResponse('This trip has reached the maximum number of participants', 401);
         }
 
 
@@ -130,10 +121,9 @@ class CustomerController extends Controller
             return $this->errorResponse('You have already registered for this trip', 401);
         }
 
-        if(auth()->user()->customer->notAvailableOnThisDate($trip)){
+        if (auth()->user()->customer->notAvailableOnThisDate($trip)) {
 
             return $this->errorResponse('You have reserved another trip on this date', 401);
-
         }
 
 
@@ -165,6 +155,4 @@ class CustomerController extends Controller
         Auth()->user()->customer->trips()->detach($trip);
         return $this->successResponse('You\'ve succesfully cancelled this trip');
     }
-
-   
 }

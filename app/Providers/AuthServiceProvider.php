@@ -37,14 +37,14 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
-        Gate::define('customer-profile', function ($customer) {
+        // Gate::define('customer-profile', function ($customer) {
 
-            return $customer->id == Auth::user()->id;
-        });
+        //     return $customer->id == Auth::user()->id;
+        // });
 
-        Gate::define('agency-profile', function ($agency) {
+        // Gate::define('agency-profile', function ($agency) {
 
-            return $agency->id == Auth::user()->id;
-        });
+        //     return $agency->id == Auth::user()->id;
+        // });
     }
 }

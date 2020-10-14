@@ -63,10 +63,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 
             //Profile agency
-            $router->get('/agencies/{agency}', 'AgencyController@profile');
-            $router->delete('/agencies/{agency}', 'AgencyController@destroy');
-            $router->put('/agencies/{agency}', 'AgencyController@update');
-            $router->patch('/agencies/{agency}', 'AgencyController@update');
+            $router->get('/agencies/profile', 'AgencyController@profile');
+            $router->delete('/agencies', 'AgencyController@destroy');
+            $router->put('/agencies', 'AgencyController@update');
+            $router->patch('/agencies', 'AgencyController@update');
             $router->get('/agencies/reports/previous-reports', 'AgencyController@getPreviousTripsReports');
             $router->get('/agencies/reports/ongoing-reports', 'AgencyController@getOngoingTripsReports');
             $router->post('/agencies/send/offer-email', 'AgencyController@sendOffers');
@@ -91,10 +91,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->delete('/{trip}/reviews/{review}', 'ReviewController@destroy');
 
             //Profile customer
-            $router->get('/customers/{customer}', 'CustomerController@profile');
-            $router->delete('/customers/{customer}', 'CustomerController@destroy');
-            $router->put('/customers/{customer}', 'CustomerController@update');
-            $router->patch('/customers/{customer}', 'CustomerController@update');
+            $router->get('/customers/profile', 'CustomerController@profile');
+            $router->delete('/customers', 'CustomerController@destroy');
+            $router->put('/customers', 'CustomerController@update');
+            $router->patch('/customers', 'CustomerController@update');
 
 
             //Trip actions

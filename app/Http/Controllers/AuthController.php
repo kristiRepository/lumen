@@ -77,7 +77,6 @@ class AuthController extends Controller
             $agency->address = $request->address;
             $agency->web = $request->web;
             $user->agency()->save($agency);
-            $user->sendEmailVerificationNotification();
 
             return $this->successResponse($user->load('agency'));
         } catch (Exception $e) {

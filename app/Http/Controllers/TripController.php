@@ -57,7 +57,9 @@ class TripController extends Controller
         $trip->destination = $request->destination;
         $trip->start_date = $request->start_date;
         $trip->end_date = $request->end_date;
+        $trip->cost=$request->cost;
         $trip->max_participants = $request->max_participants;
+        $trip->going=0;
         $trip->price = $request->price;
         $trip->due_date = $request->due_date;
         $trip->cost = $request->cost;

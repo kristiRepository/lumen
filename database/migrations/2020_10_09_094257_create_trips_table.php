@@ -20,6 +20,7 @@ class CreateTripsTable extends Migration
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('max_participants');
+            $table->integer('going');
             $table->double('price');
             $table->date('due_date');
             $table->integer('cost');

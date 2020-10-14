@@ -136,7 +136,6 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     public static $loginRules = [
         'email' => 'required|email',
         'password' => 'required',
-        'role' => 'in:agency,customer'
     ];
 
     /**

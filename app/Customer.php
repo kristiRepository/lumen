@@ -5,6 +5,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Customer extends Model
 {
@@ -70,4 +71,24 @@ class Customer extends Model
         return false;
 
     }
+
+    public function notAvailableOnThisDate($trip_model){
+        
+
+        $trips=Trip::whereIn('id',(DB::table('customer_trip')
+             ->where('customer_id','=',auth()->user()->customer->id)
+             ->get('trip_id')->pluck('trip_id')
+             ->toArray()))
+             ->get();
+    
+
+        foreach($trips as $trip){
+            if($trip_model->start_date>$trip->start_date && $trip_model->start_date<$trip->end_date){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 }

@@ -68,6 +68,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->put('/agencies/{agency}', 'AgencyController@update');
             $router->patch('/agencies/{agency}', 'AgencyController@update');
             $router->get('/agencies/reports/previous-reports', 'AgencyController@getPreviousTripsReports');
+            $router->get('/agencies/reports/ongoing-reports', 'AgencyController@getOngoingTripsReports');
             $router->post('/agencies/send/offer-email', 'AgencyController@sendOffers');
         });
 

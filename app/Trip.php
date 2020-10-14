@@ -103,6 +103,11 @@ class Trip extends Model
         return $this->start_date < date('Y-m-d');
     }
 
+    public function isFull()
+    {
+        return $this->going == $this->max_participants;
+    }
+
 
     /**
      * Undocumented function
@@ -115,13 +120,11 @@ class Trip extends Model
 
         if (Auth::user()->customer->trips != NULL) {
             foreach (Auth::user()->customer->trips as $c_trip) {
+               
                 if ($c_trip->id == $trip) {
 
                     return true;
-                } else {
-
-                    return false;
-                }
+                } 
             }
         }
 
@@ -144,5 +147,14 @@ class Trip extends Model
         } else {
             return $trip->customers->count();
         }
+    }
+
+    public static function getTrips($sign){
+        return Auth::user()->agency
+                           ->trips()
+                           ->where('start_date', $sign, date('Y-m-d'))
+                           ->get()
+                           ->pluck('title')
+                           ->toArray();
     }
 }

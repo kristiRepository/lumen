@@ -108,7 +108,6 @@ class PaymentController extends Controller
     public function executePayment(Request $request)
     {
         
-
         $apiContext = new \PayPal\Rest\ApiContext(
             new OAuthTokenCredential(
                 config('payment.paypal_public'),

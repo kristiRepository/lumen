@@ -21,13 +21,15 @@ $factory->define(Trip::class, function (Faker $faker) {
 
     $start = $faker->dateTimeBetween('now', '+2 years');
     $end = $faker->dateTimeBetween($start->format('Y-m-d H:i:s') . ' +1 days', $start->format('Y-m-d H:i:s') . ' +8 days');
+    $max_participants=$faker->numberBetween($min = 10, $max = 50);
 
     return [
         'title' => $faker->word,
         'destination' => $faker->state,
         'start_date' => $start,
         'end_date' => $end,
-        'max_participants' => $faker->numberBetween($min = 10, $max = 50),
+        'max_participants' =>$max_participants,
+        'going'=>$faker->numberBetween($min=0,$max=$max_participants),
         'price' => $faker->numberBetween($min = 110, $max = 400),
         'due_date' => $faker->dateTimeBetween('now', $start),
         'cost' => $faker->numberBetween($min = 20, $max = 100),

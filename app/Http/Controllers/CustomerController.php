@@ -120,9 +120,20 @@ class CustomerController extends Controller
             return $this->errorResponse('This trip is closed', 401);
         }
 
+        if($trip->isFull()){
+            return $this->errorResponse('This trip has reached the maximum number of participants',401);
+        }
+
+
         if ($trip->alreadyRegistered($request->trip)) {
 
             return $this->errorResponse('You have already registered for this trip', 401);
+        }
+
+        if(auth()->user()->customer->notAvailableOnThisDate($trip)){
+
+            return $this->errorResponse('You have reserved another trip on this date', 401);
+
         }
 
 

@@ -10,7 +10,6 @@ use App\Traits\ApiResponser;
 use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -117,62 +116,46 @@ class AgencyController extends Controller
     public function getPreviousTripsReports()
     {
 
-        $data = Auth::user()->agency->trips()->where('start_date', '<', date('Y-m-d'))->get();
-
-        $trips = [];
-        foreach ($data as $trip) {
-            $trips[] = $trip->title;
-        }
+        $previous_trips = Trip::getTrips('<');
 
         $ratings = [];
-        foreach ($data as $trip) {
+        foreach ($previous_trips as $trip) {
 
-            $sum = 0;
-            if ($trip->reviews->count() > 0) {
-                foreach ($trip->reviews as $review) {
-                    $sum = $sum + $review->rating;
-                }
-                $rating_per_trip = $sum / $trip->reviews->count();
-
-                $ratings[$trip->title] = $rating_per_trip;
+            $data = Trip::where('title', $trip)->first();
+            if (Trip::where('title', $trip)->first()->reviews->count() != 0) {
+                $ratings[$trip] = $data->reviews->avg('rating');
             } else {
-                $ratings[$trip->title] = 'This trip has no ratings yet';
+                $ratings[$trip] = 'This trip has no ratings yet';
             }
         }
-
+     
 
         $participants_per_trip = [];
-
-        foreach ($data as $trip) {
-
-            $participants_per_trip[$trip->title] = $trip->numberOfParticipantsOnTrip($trip->id);
+        foreach ($previous_trips as $trip) {
+            $data = Trip::where('title', $trip)->first();
+            $participants_per_trip[$trip] = $data->numberOfParticipantsOnTrip($data->id);
         }
+        
 
-        $total_participants = 0;
-        foreach ($data as $trip) {
-            $total_participants = $total_participants + $trip->numberOfParticipantsOnTrip($trip->id);
-        }
+        $total_participants = array_sum($participants_per_trip);
+        
 
         $earnings_per_trip = [];
-        foreach ($data as $trip) {
-            $earnings_per_trip[$trip->title] = $trip->numberOfParticipantsOnTrip($trip->id) * $trip->price;
+        foreach ($previous_trips as $trip) {
+            $data = Trip::where('title', $trip)->first();
+            $earnings_per_trip[$trip] = $data->numberOfParticipantsOnTrip($data->id) * $data->price;
         }
 
+        $total_earnings =array_sum($earnings_per_trip) ;
+     
 
-        $total_earnings = 0;
-        foreach ($data as $trip) {
-            $total_earnings = $total_earnings + $trip->numberOfParticipantsOnTrip($trip->id) * $trip->price;
-        }
-
-        $total_cost = 0;
-        foreach ($data as $trip) {
-            $total_cost = $total_cost + $trip->cost;
-        }
+        $total_cost=Trip::whereIn('title',$previous_trips)->get()->sum('cost');
+       
 
         $profit = $total_earnings - $total_cost;
 
         $report = [
-            'my_trips' => $trips,
+            'pervious_trips' => $previous_trips,
             'participants_per_trip' => $participants_per_trip,
             'total_participants' => $total_participants,
             'ratings_per_trip' => $ratings,
@@ -185,6 +168,27 @@ class AgencyController extends Controller
         return $this->successResponse($report, 200);
     }
 
+
+/**
+ * Undocumented function
+ *
+ * @return void
+ */
+    public function getOngoingTripsReports(){
+
+        
+        $ongoing=[];
+        foreach(Trip::getTrips('>') as $trip){
+            $data = Trip::where('title', $trip)->first();
+            $ongoing[$trip]=$data->going;
+        }
+        $participants_per_ongoing_trips=[
+            'participants_per_ongoing_trips'=>$ongoing
+        ];
+        return $this->successResponse($participants_per_ongoing_trips, 200);
+
+    }
+
     /**
      * Undocumented function
      *
@@ -193,7 +197,6 @@ class AgencyController extends Controller
      */
     public function sendOffers(Request $request)
     {
-
         $this->dispatch(new SendOfferJob($request->all()));
     }
 
@@ -212,8 +215,5 @@ class AgencyController extends Controller
                 DB::table('customer_trip')->where('trip_id', '=', $trip->id)->where('paid', '=', NULL)->delete();
             }
         }
-
-
     }
-    
 }

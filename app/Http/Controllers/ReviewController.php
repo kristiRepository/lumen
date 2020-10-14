@@ -49,12 +49,13 @@ class ReviewController extends Controller
 
         $trip = Trip::findOrFail($trip_id);
 
-        if (!$trip->alreadyRegistered($trip_id)) {
+        if (! $trip->alreadyRegistered($trip_id)) {
 
+           
             return $this->errorResponse('You can\' review this trip', 401);
         }
 
-        if ($trip->isClosed()) {
+        if (! $trip->isClosed()) {
             return $this->errorResponse('This trip has not happened yet', 401);
         }
 

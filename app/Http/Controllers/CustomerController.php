@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Agency;
 use App\Customer;
 use App\Http\Resources\Customers\CustomerCollection;
 use App\Http\Resources\Customers\CustomerResource;
@@ -154,5 +155,35 @@ class CustomerController extends Controller
 
         Auth()->user()->customer->trips()->detach($trip);
         return $this->successResponse('You\'ve succesfully cancelled this trip');
+    }
+
+    public function getAgencyHictoric($agency){
+
+
+        $agency=Agency::findOrFail($agency);
+        $ongoing=[];
+        $trips=$agency->trips->where('start_date','>',date('Y-m-d'));
+        foreach($trips as $trip){
+            $ongoing[]=$trip->title;
+        }
+
+        $previous=[];
+        $p_trips=$agency->trips->where('start_date','<',date('Y-m-d'));
+        foreach($p_trips as $p_trip){
+            $previous[$p_trip->title]=$p_trip->reviews->avg('rating');
+        }
+        
+        $data=[
+            'ongoing_trips'=>$ongoing,
+            'previous_trips'=>$previous
+        ];
+
+        return $this->successResponse($data,200);
+
+        
+
+        
+
+
     }
 }

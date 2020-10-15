@@ -157,4 +157,14 @@ class Trip extends Model
                            ->pluck('title')
                            ->toArray();
     }
+
+    public function hasReviewOnThisTrip($trip){
+
+        if( in_array($trip,Auth::user()->customer->reviews->pluck('trip_id')->toArray())){
+            return true;
+        }
+        else{
+            return false;
+        };
+    }
 }

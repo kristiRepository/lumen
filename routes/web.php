@@ -10,11 +10,11 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-$router->get('test', 'PaymentController@test');
+
 
 $router->group(['prefix' => 'api'], function () use ($router) {
 
-
+    //Execute payment
     $router->post('customers/paypal/execute-payment', 'PaymentController@executePayment');
 
 
@@ -60,10 +60,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
             //Customers
             $router->get('/customers', 'CustomerController@index');
+            $router->get('/customers/{customer}','AgencyController@getCustomerHictoric');
 
 
             //Profile agency
-            $router->get('/agencies/profile', 'AgencyController@profile');
+            $router->get('/profile/agencies', 'AgencyController@profile');
             $router->delete('/agencies', 'AgencyController@destroy');
             $router->put('/agencies', 'AgencyController@update');
             $router->patch('/agencies', 'AgencyController@update');
@@ -74,13 +75,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 
 
-
         //Restricted for customers
         $router->group(['middleware' => 'is_customer'], function () use ($router) {
 
-
+            //Create Payment
             $router->post('customers/paypal/create-payment', 'PaymentController@createPayment');
-
 
 
 
@@ -91,10 +90,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->delete('/{trip}/reviews/{review}', 'ReviewController@destroy');
 
             //Profile customer
-            $router->get('/customers/profile', 'CustomerController@profile');
+            $router->get('/profile/customers', 'CustomerController@profile');
             $router->delete('/customers', 'CustomerController@destroy');
             $router->put('/customers', 'CustomerController@update');
             $router->patch('/customers', 'CustomerController@update');
+
+
+            //Agencies historic
+            $router->get('/agencies/{agency}','CustomerController@getAgencyHictoric');
 
 
             //Trip actions

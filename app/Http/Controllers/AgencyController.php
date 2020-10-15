@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Agency;
+use App\Customer;
 use App\Http\Resources\Agencies\AgencyCollection;
 use App\Http\Resources\Agencies\AgencyResource;
 use App\Jobs\SendOfferJob;
@@ -199,14 +200,28 @@ class AgencyController extends Controller
      *
      * @return void
      */
-    public function test()
-    {
-        $trips = Trip::where('due_date', '<', date('Y-m-d'))->get();
+    public function getCustomerHictoric($customer){
 
-        if ($trips != NULL) {
-            foreach ($trips as $trip) {
-                DB::table('customer_trip')->where('trip_id', '=', $trip->id)->where('paid', '=', NULL)->delete();
+        $customer=Customer::findOrFail($customer);
+        $mytrips=Auth::user()->agency->trips;
+        $historic=[];
+        foreach($mytrips as $mytrip){
+            if($mytrip->reviews->count() == 0){
+                $historic[$mytrip->title]='This trip has not reviews';
+            }elseif(!in_array($customer->id,$mytrip->reviews->pluck('customer_id')->toArray())){
+               $historic[$mytrip->title]='Customer has not reviewed this trip'; 
+            }else{
+                
+              $historic[$mytrip->title]=$mytrip->reviews->where('customer_id',$customer->id)->first()->rating;
             }
+            
         }
+        
+        return $this->successResponse($historic,200);
+
+
     }
+  
+
+
 }

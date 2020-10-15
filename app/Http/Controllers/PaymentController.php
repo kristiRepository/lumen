@@ -132,9 +132,5 @@ class PaymentController extends Controller
         return $result;
     }
 
-    public function test()
-    {
 
-        return view('test');
-    }
 }

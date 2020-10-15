@@ -59,6 +59,11 @@ class ReviewController extends Controller
             return $this->errorResponse('This trip has not happened yet', 401);
         }
 
+        if($trip->hasReviewOnThisTrip($trip_id)){
+            return $this->errorResponse('You already have a review on this trip', 401);
+
+        }
+
         $this->validate($request, Review::$storeRules);
         $review = new Review();
         $review->trip_id = $trip_id;

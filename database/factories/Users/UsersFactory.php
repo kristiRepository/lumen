@@ -4,6 +4,7 @@
 
 use App\User;
 use Faker\Generator as Faker;
+use Illuminate\Support\Str;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +24,8 @@ $factory->define(User::class, function (Faker $faker) {
         'password'=>$faker->password(),
         'email'=>$faker->email,
         'role'=>$faker->randomElement(['agency', 'customer']),
+        'verified'=>1,
+        'v_key'=>Str::random(32),
         'phone_number'=>$faker->phoneNumber
      ];
 });

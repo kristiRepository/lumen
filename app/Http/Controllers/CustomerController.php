@@ -11,7 +11,6 @@ use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class CustomerController extends Controller
 {
@@ -157,6 +156,12 @@ class CustomerController extends Controller
         return $this->successResponse('You\'ve succesfully cancelled this trip');
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $agency
+     * @return void
+     */
     public function getAgencyHictoric($agency){
 
 

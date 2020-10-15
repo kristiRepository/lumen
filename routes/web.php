@@ -17,6 +17,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     //Execute payment
     $router->post('customers/paypal/execute-payment', 'PaymentController@executePayment');
 
+    //Verify email
+
+    $router->get('/{user}/verify','AuthController@verifyEmail');
+
 
 
     //Authentication routes

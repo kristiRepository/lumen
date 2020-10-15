@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use PayPal\Auth\OAuthTokenCredential;
 use PayPal\Api\Amount;
-use PayPal\Api\Details;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
 use PayPal\Api\Payer;

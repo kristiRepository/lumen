@@ -20,6 +20,8 @@ class CreateUsersTable extends Migration
             $table->string('email')->unique();
             $table->enum('role', ['agency', 'customer']);
             $table->string('phone_number')->unique();
+            $table->string('v_key');
+            $table->boolean('verified');
             $table->timestamps();
         });
     }

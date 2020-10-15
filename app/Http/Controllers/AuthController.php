@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Agency;
 use App\Customer;
+use App\Events\Event;
 use App\Traits\ApiResponser;
 use App\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event as FacadesEvent;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
@@ -55,35 +57,23 @@ class AuthController extends Controller
     }
 
 
-   
+   /**
+    * Undocumented function
+    *
+    * @param Request $request
+    * @return void
+    */
     public function registerAgency(Request $request)
     {
-
         $this->validate($request, User::$storeRulesAgency);
 
+        event(new \App\Events\SignUpAgencyEvent($request));
 
-        try {
-
-            $user = new User;
-            $user->username = $request->username;
-            $password = Hash::make($request->password);
-            $user->password = $password;
-            $user->email = $request->email;
-            $user->role = 'agency';
-            $user->phone_number = $request->phone_number;
-            $user->save();
-            $agency = new Agency();
-            $agency->company_name = $request->company_name;
-            $agency->address = $request->address;
-            $agency->web = $request->web;
-            $user->agency()->save($agency);
-
-            return $this->successResponse($user->load('agency'));
-        } catch (Exception $e) {
-
-            return $this->errorResponse('An error occured while creating user', 500);
-        }
+        
     }
+
+
+
 
     /**
      * Undocumented function
@@ -96,6 +86,7 @@ class AuthController extends Controller
 
         $this->validate($request, User::$loginRules);
 
+
         $input = $request->only('email', 'password');
 
 
@@ -103,6 +94,9 @@ class AuthController extends Controller
             return $this->errorResponse('User is not authorized', 401);
         } else {
             $user = User::where('email', $request->email)->first();
+            if($user->verified==0){
+                return $this->errorResponse('User is not verified',403);
+            }
 
             if ($user->role == 'agency') {
                 $user = $user->load('agency');
@@ -136,5 +130,21 @@ class AuthController extends Controller
         } else {
             return $this->errorResponse('Old password is not correct', 401);
         }
+    }
+
+    public function verifyEmail($user,Request $request){
+
+        if(! $request->has('vkey')){
+            $this->errorResponse('An error occured while verifying email',401);
+        }
+        $user=User::findOrFail($user);
+       if($user->v_key != $request->vkey){
+        $this->errorResponse('Can\'t verify email',401);
+       }
+
+       $user->verified=true;
+       $user->save();
+       return $this->successResponse('Email verified succesfullly');
+
     }
 }

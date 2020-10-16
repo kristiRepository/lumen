@@ -6,6 +6,6 @@
     <title>Document</title>
 </head>
 <body>
-    Click <a href=<?php echo url('/api/verify/?vkey='.$vkey); ?>>here  </a>to verify your email
+    Click <a href=<?php echo url('/password-reset?vkey='.$vkey); ?>>here  </a>to reset your password
 </body>
 </html>

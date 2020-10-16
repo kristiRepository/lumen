@@ -2,16 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Agency;
-use App\Customer;
-use App\Events\Event;
+use App\Mail\SendPasswordVerificationMailable;
 use App\Traits\ApiResponser;
 use App\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event as FacadesEvent;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+
 
 class AuthController extends Controller
 {
@@ -31,29 +29,8 @@ class AuthController extends Controller
 
         $this->validate($request, User::$storeRulesCustomer);
 
-
-        try {
-
-            $user = new User;
-            $user->username = $request->username;
-            $password = Hash::make($request->password);
-            $user->password = $password;
-            $user->email = $request->email;
-            $user->role = 'customer';
-            $user->phone_number = $request->phone_number;
-            $user->save();
-            $customer = new Customer();
-            $customer->name = $request->name;
-            $customer->surname = $request->surname;
-            $customer->gender = $request->gender;
-            $customer->age = $request->age;
-            $user->customer()->save($customer);
-
-            return $this->successResponse($user->load('customer'));
-        } catch (Exception $e) {
-
-            return $this->errorResponse('An error occured while creating user', 500);
-        }
+        event(new \App\Events\SignUpCustomerEvent($request));
+ 
     }
 
 
@@ -132,19 +109,60 @@ class AuthController extends Controller
         }
     }
 
-    public function verifyEmail($user,Request $request){
+    public function verifyEmail(Request $request){
 
         if(! $request->has('vkey')){
-            $this->errorResponse('An error occured while verifying email',401);
+           return  $this->errorResponse('An error occured while verifying email',401);
         }
-        $user=User::findOrFail($user);
-       if($user->v_key != $request->vkey){
-        $this->errorResponse('Can\'t verify email',401);
-       }
+        $user=User::where('v_key',$request->vkey)->first();
+        if($user->count()==0){
+            return  $this->errorResponse('Can \'t identify user ',401);
+
+        }
+        
+        if($user->verified == 1){
+           return $this->errorResponse('This user is already verified',401);
+
+        }
 
        $user->verified=true;
        $user->save();
        return $this->successResponse('Email verified succesfullly');
+
+    }
+
+    public function resetPassword(Request $request){
+        $user=User::where('email',$request->email)->first();
+        if($user->count()==0){
+            return  $this->errorResponse('Can \'t identify user ',401);
+        }
+
+        Mail::to($user->email)->send(new SendPasswordVerificationMailable($user->v_key));
+        
+    }
+
+    public function newPassword(Request $request){
+
+        $this->validate($request, User::$resetPasswordRules);
+
+        if(! $request->has('vkey')){
+            return  $this->errorResponse('An error occured while changing the password',401);
+         }
+
+         $user=User::where('v_key',$request->vkey)->first();
+        if($user->count()==0){
+            return  $this->errorResponse('Can \'t identify user ',401);
+        }
+
+        if($user->verified ==0){
+            return $this->errorResponse('Please verify your email first',401);
+        }
+
+        $user->password=Hash::make($request->new_password);
+        $user->save();
+
+        return $this->successResponse('Password changed succesfully');
+
 
     }
 }

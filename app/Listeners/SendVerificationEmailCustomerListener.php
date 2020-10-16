@@ -3,12 +3,12 @@
 namespace App\Listeners;
 
 
-use App\Events\SignUpAgencyEvent;
+use App\Events\SignUpCustomerEvent;
 use App\Mail\SendVerificationMailable;
 use App\Traits\ApiResponser;
 use Illuminate\Support\Facades\Mail;
 
-class SendVerificationEmailListener
+class SendVerificationEmailCustomerListener
 {
     use ApiResponser;
     /**
@@ -27,10 +27,10 @@ class SendVerificationEmailListener
      * @param SignUpAgencyEvent $event
      * @return void
      */
-    public function handle(SignUpAgencyEvent $event)
+    public function handle(SignUpCustomerEvent $event)
     {
         $user=$event->getUser();
-        Mail::to($user->email)->send(new SendVerificationMailable($user->v_key,$user->id));
+        Mail::to($user->email)->send(new SendVerificationMailable($user->v_key));
 
         
 

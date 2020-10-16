@@ -18,12 +18,12 @@ class SendVerificationMailable extends Mailable
      */
 
      private $v_key;
-     private $id;
+     
  
-    public function __construct($v_key,$id)
+    public function __construct($v_key)
     {
         $this->v_key=$v_key;
-        $this->id=$id;
+      
         
     }
 
@@ -35,7 +35,7 @@ class SendVerificationMailable extends Mailable
     public function build()
     {
         
-        return $this->view('mail.verification')->with('vkey',$this->v_key)->with('id',$this->id)
+        return $this->view('mail.verification')->with('vkey',$this->v_key)
             ->subject('Verification Email');
     }
 }

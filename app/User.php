@@ -149,6 +149,12 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         'confirm_password' => 'required|same:new_password'
     ];
 
+    public static $resetPasswordRules = [
+        'vkey' => '',
+        'new_password' => 'required',
+        'confirm_password' => 'required|same:new_password'
+    ];
+
     /**
      * Undocumented function
      *

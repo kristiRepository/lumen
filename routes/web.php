@@ -18,13 +18,16 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('customers/paypal/execute-payment', 'PaymentController@executePayment');
 
     //Verify email
+    $router->get('/verify','AuthController@verifyEmail');
 
-    $router->get('/{user}/verify','AuthController@verifyEmail');
+    //Reset password
+    $router->post('/reset-password','AuthController@resetPassword');
+    $router->post('/new-password','AuthController@newPassword');
 
 
 
     //Authentication routes
-    $router->post('/auth/customer_signup', 'AuthController@registerCustomer');
+    $router->post('/auth/customer-signup', 'AuthController@registerCustomer');
     $router->post('/auth/agency-signup', 'AuthController@registerAgency');
     $router->post('/auth/login', 'AuthController@login');
     $router->get('email/verify/{user_id}', 'AuthController@verify');

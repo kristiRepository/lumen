@@ -207,7 +207,8 @@ class AgencyController extends Controller
         foreach($mytrips as $mytrip){
             if($mytrip->reviews->count() == 0){
                 $historic[$mytrip->title]='This trip has not reviews';
-            }elseif(!in_array($customer->id,$mytrip->reviews->pluck('customer_id')->toArray())){
+            }
+            elseif(!in_array($customer->id,$mytrip->reviews->pluck('customer_id')->toArray())){
                $historic[$mytrip->title]='Customer has not reviewed this trip'; 
             }else{
                 

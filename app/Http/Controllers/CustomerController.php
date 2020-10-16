@@ -128,6 +128,8 @@ class CustomerController extends Controller
 
 
         Auth()->user()->customer->trips()->attach($trip);
+        $trip->going=$trip->going +1;
+        $trip->save();
         return $this->successResponse('You\'ve succesfully registered for this trip');
     }
 
@@ -166,20 +168,25 @@ class CustomerController extends Controller
 
 
         $agency=Agency::findOrFail($agency);
-        $ongoing=[];
-        $trips=$agency->trips->where('start_date','>',date('Y-m-d'));
-        foreach($trips as $trip){
-            $ongoing[]=$trip->title;
-        }
+        $trips=$agency->trips->where('start_date','>',date('Y-m-d'))->pluck('title')->toArray();
+      
+        
+        // $previous=[];
+        $previous=$agency->trips->where('start_date','<',date('Y-m-d'))
+                         ->map(function($trip){
+                            return [
+                                $trip->title=>$trip->reviews->avg('rating')
+                            ];
 
-        $previous=[];
-        $p_trips=$agency->trips->where('start_date','<',date('Y-m-d'));
-        foreach($p_trips as $p_trip){
-            $previous[$p_trip->title]=$p_trip->reviews->avg('rating');
-        }
+        })->toArray();
+
+
+        // foreach($p_trips as $p_trip){
+        //     $previous[$p_trip->title]=$p_trip->reviews->avg('rating');
+        // }
         
         $data=[
-            'ongoing_trips'=>$ongoing,
+            'ongoing_trips'=>$trips,
             'previous_trips'=>$previous
         ];
 

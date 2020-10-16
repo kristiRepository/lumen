@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Agency;
+
 use App\Customer;
 use App\User;
 use Illuminate\Support\Facades\Hash;

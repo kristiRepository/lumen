@@ -117,37 +117,11 @@ class Trip extends Model
      */
     public function alreadyRegistered($trip)
     {
+        return in_array($trip,Auth::user()->customer->trips->pluck('id')->toArray());
 
-        if (Auth::user()->customer->trips != NULL) {
-            foreach (Auth::user()->customer->trips as $c_trip) {
-               
-                if ($c_trip->id == $trip) {
-
-                    return true;
-                } 
-            }
-        }
-
-        return false;
+    
     }
 
-
-    /**
-     * Undocumented function
-     *
-     * @param [type] $trip
-     * @return void
-     */
-    public function numberOfParticipantsOnTrip($trip)
-    {
-        $trip = $this->findOrFail($trip);
-
-        if (!$trip->isClosed()) {
-            return 0;
-        } else {
-            return $trip->customers->count();
-        }
-    }
 
     public static function getTrips($sign){
         return Auth::user()->agency
@@ -158,13 +132,15 @@ class Trip extends Model
                            ->toArray();
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip
+     * @return boolean
+     */
     public function hasReviewOnThisTrip($trip){
 
-        if( in_array($trip,Auth::user()->customer->reviews->pluck('trip_id')->toArray())){
-            return true;
-        }
-        else{
-            return false;
-        };
+        return  in_array($trip,Auth::user()->customer->reviews->pluck('trip_id')->toArray());
+        
     }
 }

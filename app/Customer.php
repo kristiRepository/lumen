@@ -38,6 +38,8 @@ class Customer extends Model
         return $this->belongsToMany(Trip::class);
     }
 
+
+
     /**
      * Undocumented function
      *
@@ -48,6 +50,8 @@ class Customer extends Model
 
         return $this->hasMany(Review::class);
     }
+
+
 
     /**
      * Undocumented function
@@ -60,6 +64,13 @@ class Customer extends Model
         return $this->belongsTo(User::class);
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip_id
+     * @return void
+     */
     public function registeredForTrip($trip_id){
 
         $trips=Auth::user()->customer->trips;
@@ -72,6 +83,13 @@ class Customer extends Model
 
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param [type] $trip_model
+     * @return void
+     */
     public function notAvailableOnThisDate($trip_model){
         
 

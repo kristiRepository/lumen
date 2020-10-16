@@ -50,8 +50,6 @@ class AuthController extends Controller
     }
 
 
-
-
     /**
      * Undocumented function
      *
@@ -109,6 +107,13 @@ class AuthController extends Controller
         }
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
     public function verifyEmail(Request $request){
 
         if(! $request->has('vkey')){
@@ -131,6 +136,13 @@ class AuthController extends Controller
 
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
     public function resetPassword(Request $request){
         $user=User::where('email',$request->email)->first();
         if($user->count()==0){
@@ -141,6 +153,13 @@ class AuthController extends Controller
         
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
     public function newPassword(Request $request){
 
         $this->validate($request, User::$resetPasswordRules);

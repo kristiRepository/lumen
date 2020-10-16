@@ -31,6 +31,6 @@ class SendPasswordVerificationMailable extends Mailable
     public function build()
     {
         return $this->view('mail.password-verify')->with('vkey',$this->body)
-            ->subject('Verify Password');
+            ->subject('Reset Password');
     }
 }

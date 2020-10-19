@@ -12,6 +12,7 @@
 */
 
 
+
 $router->group(['prefix' => 'api'], function () use ($router) {
 
     //Execute payment
@@ -53,6 +54,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
         //Change password
         $router->post('/auth/change-password', 'AuthController@changePassword');
+
+        //Sign out
+        $router->post('/auth/signout', 'AuthController@signout');
 
 
 

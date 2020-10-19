@@ -7,12 +7,14 @@ use App\Customer;
 use App\Http\Resources\Agencies\AgencyCollection;
 use App\Http\Resources\Agencies\AgencyResource;
 use App\Jobs\SendOfferJob;
+use App\Review;
 use App\Traits\ApiResponser;
 use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AgencyController extends Controller
 {
@@ -72,7 +74,6 @@ class AgencyController extends Controller
         if ($agency->isClean()) {
             return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
         }
-
         $agency->save();
 
 
@@ -106,82 +107,22 @@ class AgencyController extends Controller
     public function getPreviousTripsReports()
     {
 
-        $previous_trips = Trip::getTrips('<');
+        $trips=DB::table('users')
+        ->join('agencies', 'users.id', '=', 'agencies.user_id')
+        ->rightJoin('trips','agencies.id','=','trips.agency_id')
+        ->rightJoin('reviews','trips.id','=','reviews.trip_id')
+        ->where('agencies.id',Auth::user()->agency->id)
+        ->where('trips.start_date','<', date('Y-m-d'))
+        ->select('trips.title AS title','trips.going as participants', DB::raw('avg(reviews.rating) AS rating'),DB::raw('trips.going*trips.price AS  earnings_per_trip'),'trips.cost as cost')
+        ->groupBy('trip_id')
+        ->get()->toArray();
 
-
-        $trips = Auth::user()->agency
-            ->trips()
-            ->where('start_date', '<', date('Y-m-d'))
-            ->get();
-
-        $ratings = $trips->map(function ($rating) {
-
-            return [
-                $rating->title => $rating->reviews->avg('rating')
-            ];
-        })->toArray();
-
-
-
-        // dd($ratings->load('reviews');
-        // }));
-        // foreach ($previous_trips as $trip) {
-
-        //     $data = Trip::where('title', $trip)->first();
-        //     if (Trip::where('title', $trip)->first()->reviews->count() != 0) {
-        //         $ratings[$trip] = $data->reviews->avg('rating');
-        //     } else {
-        //         $ratings[$trip] = 'This trip has no ratings yet';
-        //     }
-        // }
-
-
-        // $participants_per_trip = [];
-        // foreach ($previous_trips as $trip) {
-        //     $data = Trip::where('title', $trip)->first();
-        //     $participants_per_trip[$trip] = $data->numberOfParticipantsOnTrip($data->id);
-        // }
-
-        $participants_per_trip = $trips->map(function ($trip) {
-            return [
-                $trip->title => $trip->going
-            ];
-        })->toArray();
-
-
-        $total_participants = $trips->sum('going');
-
-
-        // $earnings_per_trip = [];
-        // foreach ($previous_trips as $trip) {
-        //     $data = Trip::where('title', $trip)->first();
-        //     $earnings_per_trip[$trip] = $data->numberOfParticipantsOnTrip($data->id) * $data->price;
-        // }
-
-        $earnings_per_trip = $trips->map(function ($trip) {
-            return [
-                $trip->title => $trip->going * $trip->price
-            ];
-        })->toArray();
-
-
-
-        // dd(Arr::flatten($earnings_per_trip));
-
-
-        $total_earnings = array_sum(Arr::flatten($earnings_per_trip));
-
-        $total_cost = $trips->sum('cost');
-
-
+        $total_earnings = array_sum(array_column($trips,'earnings_per_trip'));
+        $total_cost =array_sum(array_column($trips,'cost'));
         $profit = $total_earnings - $total_cost;
 
         $report = [
-            'pervious_trips' => $previous_trips,
-            'participants_per_trip' => $participants_per_trip,
-            'total_participants' => $total_participants,
-            'ratings_per_trip' => $ratings,
-            'earnings_per_trip' => $earnings_per_trip,
+            'trips'=>$trips,
             'total_earnings' => $total_earnings,
             'total_cost' => $total_cost,
             'profit' => $profit
@@ -199,26 +140,13 @@ class AgencyController extends Controller
     public function getOngoingTripsReports()
     {
 
-
-        // $ongoing = [];
-        // foreach (Trip::getTrips('>') as $trip) {
-        //     $data = Trip::where('title', $trip)->first();
-        //     $ongoing[$trip] = $data->going;
-        // }
-
         $ongoing_trips = Auth::user()->agency
             ->trips()
             ->where('start_date', '>', date('Y-m-d'))
-            ->get()->map(function ($trip) {
-                return [
-                    $trip->title => $trip->going
-                ];
-            })->toArray();;
-
-
-        // $participants_per_ongoing_trips = [
-        //     'participants_per_ongoing_trips' => $ongoing
-        // ];
+            ->select('trips.title','trips.going')
+            ->get();
+            
+         
         return $this->successResponse($ongoing_trips, 200);
     }
 
@@ -241,36 +169,17 @@ class AgencyController extends Controller
      */
     public function getCustomerHictoric($customer)
     {
+        
+        $user=Auth::user()->agency->id;
+      
 
+        $trips=DB::table('trips')
+        ->rightJoin('reviews','trips.id','=','reviews.trip_id')
+        ->select('trips.title','reviews.rating')
+        ->where('reviews.customer_id','=',$customer)
+        ->where('trips.agency_id','=',$user)->get();
+       
 
-        $customers = Customer::findOrFail($customer)->trips->pluck('id')->toArray();
-        $mytrips = Auth::user()->agency->trips;
-
-
-        $historic = $mytrips->whereIn('id', $customers)->map(function ($trip) use ($customer) {
-            if (!is_null($trip->customers->where('id', $customer)->first()->reviews->where('trip_id', $trip->id)->first())) {
-                return [
-                    $trip->title => $trip->customers->where('id', $customer)->first()->reviews->where('trip_id', $trip->id)->first()->rating
-                ];
-            } else {
-                return [
-                    $trip->title => 'User has not reviewed this trip'
-                ];
-            }
-        });
-
-        // $historic = [];
-        // foreach ($mytrips as $mytrip) {
-        //     if ($mytrip->reviews->count() == 0) {
-        //         $historic[$mytrip->title] = 'This trip has not reviews';
-        //     } elseif (!in_array($customer->id, $mytrip->reviews->pluck('customer_id')->toArray())) {
-        //         $historic[$mytrip->title] = 'Customer has not reviewed this trip';
-        //     } else {
-
-        //         $historic[$mytrip->title] = $mytrip->reviews->where('customer_id', $customer->id)->first()->rating;
-        //     }
-        // }
-
-        return $this->successResponse($historic, 200);
+        return $this->successResponse($trips, 200);
     }
 }

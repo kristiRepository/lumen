@@ -7,6 +7,7 @@ use App\Traits\ApiResponser;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -81,6 +82,13 @@ class AuthController extends Controller
                 return $this->respondWithToken($user, $authorized);
             }
         }
+    }
+
+    public function signout(){
+
+        Auth::invalidate(true);
+         
+        return $this->successResponse('User logged out succesfully');
     }
 
     /**
@@ -184,4 +192,6 @@ class AuthController extends Controller
 
 
     }
+
+
 }

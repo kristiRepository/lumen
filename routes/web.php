@@ -11,7 +11,7 @@
 |
 */
 
-
+$router->get('test','AuthController@test');
 
 $router->group(['prefix' => 'api'], function () use ($router) {
 
@@ -20,6 +20,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     //Verify email
     $router->get('/verify','AuthController@verifyEmail');
+    $router->post('/resend-verification','AuthController@resendVerificationEmail');
 
     //Reset password
     $router->post('/reset-password','AuthController@resetPassword');

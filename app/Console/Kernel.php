@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\CustomersHaveNotPaidCommand::class,
+        Commands\HaveNotVerifiedEmailIn10Days::class,
     ];
 
     /**
@@ -28,6 +29,8 @@ class Kernel extends ConsoleKernel
     {
 
         $schedule->command('delete:customers')
+            ->dailyAt('08:00');
+        $schedule->command('refresh:v_key')
             ->dailyAt('08:00');
     }
 }

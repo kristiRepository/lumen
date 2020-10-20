@@ -37,12 +37,11 @@ class CustomersHaveNotPaidCommand extends Command
      */ 
     public function handle()
     {
-        $trips = Trip::where('due_date', '<', date('Y-m-d'))->get();
-
-        if ($trips != NULL) {
-            foreach ($trips as $trip) {
-                DB::table('customer_trip')->where('trip_id', '=', $trip->id)->where('paid', '=', NULL)->delete();
-            }
-        }
+         DB::table('customer_trip')
+        ->join('trips','customer_trip.trip_id','=','trips.id')
+        ->join('customers','customer_trip.customer_id','=','customers.id')
+        ->where('due_date', '<', date('Y-m-d'))
+        ->where('paid', '=', NULL)
+        ->delete();
     }
 }

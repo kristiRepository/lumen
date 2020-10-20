@@ -100,7 +100,7 @@ class Trip extends Model
      */
     public function isClosed()
     {
-        return $this->start_date < date('Y-m-d');
+        return $this->due_date < date('Y-m-d');
     }
 
     public function isFull()

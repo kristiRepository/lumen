@@ -93,8 +93,12 @@ class TripController extends Controller
     public function update(Request $request, $trip)
     {
 
+
         $this->validate($request, Trip::$updateRules);
         $trip = Trip::findOrFail($trip);
+         if(is_null(Auth::user()->agency->trips()->where('trips.id','=',$trip->id)->first())){
+             return $this->errorResponse('Cannot modify trip',403);
+         }
 
         $trip->fill($request->all());
 
@@ -115,9 +119,10 @@ class TripController extends Controller
      */
     public function destroy($trip)
     {
-
         $trip = Trip::findOrFail($trip);
-
+        if(is_null(Auth::user()->agency->trips()->where('trips.id','=',$trip->id)->first())){
+            return $this->errorResponse('Cannot modify trip',403);
+        }
         $trip->delete();
 
         return $this->successResponse($trip);

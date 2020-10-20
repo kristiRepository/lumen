@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Customer;
 use App\Mail\SendPasswordVerificationMailable;
+use App\Mail\SendVerificationMailable;
 use App\Traits\ApiResponser;
+use App\Trip;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+
 
 
 class AuthController extends Controller
@@ -25,6 +29,12 @@ class AuthController extends Controller
     }
 
    
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
     public function registerCustomer(Request $request)
     {
 
@@ -50,7 +60,6 @@ class AuthController extends Controller
         
     }
 
-
     /**
      * Undocumented function
      *
@@ -70,7 +79,7 @@ class AuthController extends Controller
             return $this->errorResponse('User is not authorized', 401);
         } else {
             $user = User::where('email', $request->email)->first();
-            if($user->verified==0){
+            if($user->verified==0 && date('Y-m-d')>$user->created_at->addDays(10)){
                 return $this->errorResponse('User is not verified',403);
             }
 
@@ -84,6 +93,34 @@ class AuthController extends Controller
         }
     }
 
+
+    /**
+     * Undocumented function
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function resendVerificationEmail(Request $request){
+
+        $this->validate($request,[
+            'email'=>'required'
+        ]);
+
+        if(is_null(User::where('email',$request->email)->first())){
+            return $this->errorResponse('There is no user with this email',403);
+        };
+
+        $user=User::where('email',$request->email)->first();
+        Mail::to($user->email)->send(new SendVerificationMailable($user->v_key));
+
+
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function signout(){
 
         Auth::invalidate(true);
@@ -100,10 +137,8 @@ class AuthController extends Controller
     public function changePassword(Request $request)
     {
 
-
         $this->validate($request, User::$changePasswordRules);
-        $user = User::find($user = Auth::user()->id);
-
+        $user = User::find(Auth::user()->id);
 
         if (Hash::check($request->old_password, Auth::user()->password)) {
             $user->password = Hash::make($request->new_password);
@@ -127,11 +162,11 @@ class AuthController extends Controller
         if(! $request->has('vkey')){
            return  $this->errorResponse('An error occured while verifying email',401);
         }
-        $user=User::where('v_key',$request->vkey)->first();
-        if($user->count()==0){
+      
+        if(is_null(User::where('v_key',$request->vkey)->first())){
             return  $this->errorResponse('Can \'t identify user ',401);
-
         }
+        $user=User::where('v_key',$request->vkey)->first();
         
         if($user->verified == 1){
            return $this->errorResponse('This user is already verified',401);
@@ -152,11 +187,11 @@ class AuthController extends Controller
      * @return void
      */
     public function resetPassword(Request $request){
-        $user=User::where('email',$request->email)->first();
-        if($user->count()==0){
+        
+        if(is_null(User::where('email',$request->email)->first())){
             return  $this->errorResponse('Can \'t identify user ',401);
         }
-
+       $user=User::where('email',$request->email)->first();
         Mail::to($user->email)->send(new SendPasswordVerificationMailable($user->v_key));
         
     }
@@ -176,11 +211,11 @@ class AuthController extends Controller
             return  $this->errorResponse('An error occured while changing the password',401);
          }
 
-         $user=User::where('v_key',$request->vkey)->first();
-        if($user->count()==0){
+         
+        if(is_null(User::where('v_key',$request->vkey)->first())){
             return  $this->errorResponse('Can \'t identify user ',401);
         }
-
+        $user=User::where('v_key',$request->vkey)->first();
         if($user->verified ==0){
             return $this->errorResponse('Please verify your email first',401);
         }
@@ -192,6 +227,38 @@ class AuthController extends Controller
 
 
     }
+
+    public function test(){
+        $customer_id=108;
+        $trip_id=25;
+
+        $mine=Trip::findOrFail($trip_id);
+        
+// 
+        dd(is_null($trips=DB::table('customers')
+        ->rightJoin('customer_trip','customer_trip.customer_id','=','customers.id')
+        ->rightJoin('trips','customer_trip.trip_id','=','trips.id')
+        ->where('customers.id',$customer_id)
+        ->where('trips.start_date','<',$mine->start_date)
+        ->where('trips.end_date','>',$mine->start_date)
+        ->get()));
+        dd($trips);
+        // $trips=Trip::whereIn('id',(DB::table('customer_trip')
+        // ->where('customer_id','=',)
+        // ->get('trip_id')->pluck('trip_id')
+        // ->toArray()))
+        // ->get();
+
+
+//    foreach($trips as $trip){
+//        if($trip_model->start_date>$trip->start_date && $trip_model->start_date<$trip->end_date){
+//            return true;
+//        }
+//    }
+//    return false;
+// }
+    }
+
 
 
 }

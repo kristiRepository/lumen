@@ -3,16 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Agency;
-use App\Customer;
 use App\Http\Resources\Agencies\AgencyCollection;
 use App\Http\Resources\Agencies\AgencyResource;
 use App\Jobs\SendOfferJob;
-use App\Review;
 use App\Traits\ApiResponser;
-use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 

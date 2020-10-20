@@ -6,7 +6,6 @@ use App\Agency;
 use App\Customer;
 use App\Http\Resources\Customers\CustomerCollection;
 use App\Http\Resources\Customers\CustomerResource;
-use App\Review;
 use App\Traits\ApiResponser;
 use App\Trip;
 use Illuminate\Http\Request;
@@ -175,9 +174,6 @@ class CustomerController extends Controller
            ->groupBy('trip_id','title')
            ->get();
 
-        
-        
-      
         $data = [
             'ongoing_trips' => $trips,
             'previous_trips' => $ratings

@@ -228,37 +228,6 @@ class AuthController extends Controller
 
     }
 
-    public function test(){
-        $customer_id=108;
-        $trip_id=25;
-
-        $mine=Trip::findOrFail($trip_id);
-        
-// 
-        dd(is_null($trips=DB::table('customers')
-        ->rightJoin('customer_trip','customer_trip.customer_id','=','customers.id')
-        ->rightJoin('trips','customer_trip.trip_id','=','trips.id')
-        ->where('customers.id',$customer_id)
-        ->where('trips.start_date','<',$mine->start_date)
-        ->where('trips.end_date','>',$mine->start_date)
-        ->get()));
-        dd($trips);
-        // $trips=Trip::whereIn('id',(DB::table('customer_trip')
-        // ->where('customer_id','=',)
-        // ->get('trip_id')->pluck('trip_id')
-        // ->toArray()))
-        // ->get();
-
-
-//    foreach($trips as $trip){
-//        if($trip_model->start_date>$trip->start_date && $trip_model->start_date<$trip->end_date){
-//            return true;
-//        }
-//    }
-//    return false;
-// }
-    }
-
-
+   
 
 }

@@ -117,19 +117,18 @@ class Trip extends Model
      */
     public function alreadyRegistered($trip)
     {
-        return in_array($trip,Auth::user()->customer->trips->pluck('id')->toArray());
-
-    
+        return in_array($trip, Auth::user()->customer->trips->pluck('id')->toArray());
     }
 
 
-    public static function getTrips($sign){
+    public static function getTrips($sign)
+    {
         return Auth::user()->agency
-                           ->trips()
-                           ->where('start_date', $sign, date('Y-m-d'))
-                           ->get()
-                           ->pluck('title')
-                           ->toArray();
+            ->trips()
+            ->where('start_date', $sign, date('Y-m-d'))
+            ->get()
+            ->pluck('title')
+            ->toArray();
     }
 
     /**
@@ -138,9 +137,9 @@ class Trip extends Model
      * @param [type] $trip
      * @return boolean
      */
-    public function hasReviewOnThisTrip($trip){
+    public function hasReviewOnThisTrip($trip)
+    {
 
-        return  in_array($trip,Auth::user()->customer->reviews->pluck('trip_id')->toArray());
-        
+        return  in_array($trip, Auth::user()->customer->reviews->pluck('trip_id')->toArray());
     }
 }

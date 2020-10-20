@@ -34,14 +34,14 @@ class CustomersHaveNotPaidCommand extends Command
      * Undocumented function
      *
      * @return void
-     */ 
+     */
     public function handle()
     {
-         DB::table('customer_trip')
-        ->join('trips','customer_trip.trip_id','=','trips.id')
-        ->join('customers','customer_trip.customer_id','=','customers.id')
-        ->where('due_date', '<', date('Y-m-d'))
-        ->where('paid', '=', NULL)
-        ->delete();
+        DB::table('customer_trip')
+            ->join('trips', 'customer_trip.trip_id', '=', 'trips.id')
+            ->join('customers', 'customer_trip.customer_id', '=', 'customers.id')
+            ->where('due_date', '<', date('Y-m-d'))
+            ->where('paid', '=', NULL)
+            ->delete();
     }
 }

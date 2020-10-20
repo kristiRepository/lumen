@@ -3,26 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Agency;
-use App\Customer;
-use App\Http\Resources\Customers\CustomerCollection;
-use App\Http\Resources\Customers\CustomerResource;
+use App\Repositories\CustomerRepository;
+use App\Services\CustomerService;
 use App\Traits\ApiResponser;
 use App\Trip;
+use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 
 class CustomerController extends Controller
 {
     use ApiResponser;
+
     /**
-     * Create a new controller instance.
+     * Undocumented variable
      *
-     * @return void
+     * @var [type]
      */
-    public function __construct()
+    private $customerRepo;
+    private $customerService;
+
+
+   /**
+    * Undocumented function
+    *
+    * @param CustomerRepository $customerRepo
+    * @param CustomerService $customerService
+    */
+    public function __construct(CustomerRepository $customerRepo,CustomerService $customerService)
     {
+        $this->customerRepo=$customerRepo;
+        $this->customerService=$customerService;
     }
 
     /**
@@ -33,7 +45,8 @@ class CustomerController extends Controller
     public function index()
     {
 
-        return CustomerCollection::collection(Customer::paginate(10));
+        return $this->customerRepo->index();
+        
     }
 
 
@@ -48,7 +61,9 @@ class CustomerController extends Controller
 
         $customer = Auth::user()->customer;
 
-        return $this->successResponse(new CustomerResource($customer));
+        return $this->customerRepo->show($customer);
+
+        
     }
 
     /**
@@ -61,18 +76,11 @@ class CustomerController extends Controller
     public function update(Request $request)
     {
 
-        $customer = Auth::user()->customer;
+       $customer = Auth::user()->customer;
+       $this->validate($request, User::$updateRulesCustomer);
+      
+       return $this->customerRepo->update($customer,$request);
 
-        $this->validate($request, $customer->user->updateRulesCustomer);
-        $customer->fill($request->all());
-
-        if ($customer->isClean()) {
-            return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $customer->save();
-
-        return $this->successResponse($customer);
     }
 
     /**
@@ -85,9 +93,7 @@ class CustomerController extends Controller
     {
         $customer = Auth::user()->customer;
 
-        $customer->user->delete();
-        $customer->delete();
-        return $this->successResponse($customer);
+        return $this->customerRepo->destroy($customer);
     }
 
 
@@ -102,30 +108,9 @@ class CustomerController extends Controller
 
         $trip = Trip::findOrFail($request->trip);
 
-        if ($trip->isClosed()) {
-            return $this->errorResponse('This trip is closed', 401);
-        }
+        return $this->customerService->participate($trip);
 
-        if ($trip->isFull()) {
-            return $this->errorResponse('This trip has reached the maximum number of participants', 401);
-        }
-
-
-        if ($trip->alreadyRegistered($request->trip)) {
-
-            return $this->errorResponse('You have already registered for this trip', 401);
-        }
-
-        if (auth()->user()->customer->notAvailableOnThisDate($trip)) {
-
-            return $this->errorResponse('You have reserved another trip on this date', 401);
-        }
-
-
-        Auth()->user()->customer->trips()->attach($trip);
-        $trip->going = $trip->going + 1;
-        $trip->save();
-        return $this->successResponse('You\'ve succesfully registered for this trip');
+     
     }
 
 
@@ -140,17 +125,9 @@ class CustomerController extends Controller
 
         $trip = Trip::findOrFail($request->trip);
 
-        if ($trip->isClosed()) {
-            return $this->errorResponse('This trip is closed', 401);
-        }
+        return $this->customerService->cancel($trip);
 
-        if (!$trip->alreadyRegistered($request->trip)) {
-
-            return $this->errorResponse('You are not registered for this trip', 401);
-        }
-
-        Auth()->user()->customer->trips()->detach($trip);
-        return $this->successResponse('You\'ve succesfully cancelled this trip');
+        
     }
 
     /**
@@ -162,22 +139,10 @@ class CustomerController extends Controller
     public function getAgencyHictoric($agency)
     {
 
-
         $agency = Agency::findOrFail($agency);
-        $trips = $agency->trips->where('start_date', '>', date('Y-m-d'))->pluck('title')->toArray();
 
-      
-        $ratings = DB::table('trips')
-           ->join('reviews', 'trips.id', '=', 'reviews.trip_id')
-           ->select('trips.title', DB::raw('avg(reviews.rating) AS average'))
-           ->where('trips.start_date', '<', date('Y-m-d'))
-           ->groupBy('trip_id','title')
-           ->get();
+        return $this->customerRepo->agencyHistoric($agency);
+        
+}
 
-        $data = [
-            'ongoing_trips' => $trips,
-            'previous_trips' => $ratings
-        ];
-        return $this->successResponse($data, 200);
-    }
 }

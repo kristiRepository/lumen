@@ -7,7 +7,6 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Notifications\Notifiable;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -98,7 +97,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @var array
      */
-    public $updateRulesCustomer = [
+    public static $updateRulesCustomer = [
 
         'username' => 'min:6|unique:users,username',
         'email' => 'email|unique:users,email',
@@ -116,7 +115,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      *
      * @var array
      */
-    public $updateRulesAgency = [
+    public static $updateRulesAgency = [
 
         'username' => 'min:6|unique:users,username',
         'email' => 'email|unique:users,email',

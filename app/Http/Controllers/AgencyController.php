@@ -2,26 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Agency;
-use App\Http\Resources\Agencies\AgencyCollection;
-use App\Http\Resources\Agencies\AgencyResource;
-use App\Jobs\SendOfferJob;
-use App\Traits\ApiResponser;
+
+use App\Repositories\AgencyRepository;
+use App\Services\AgencyService;
+use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+
 
 class AgencyController extends Controller
 {
-    use ApiResponser;
+
     /**
-     * Create a new controller instance.
+     * Undocumented variable
      *
-     * @return void
+     * @var [type]
      */
-    public function __construct()
+    private $agencyRepo;
+    private $agencyService;
+
+
+
+    /**
+     * Undocumented function
+     *
+     * @param AgencyRepository $agencyRepo
+     * @param AgencyService $agencyService
+     */
+    public function __construct(AgencyRepository $agencyRepo,AgencyService $agencyService)
     {
+
+        $this->agencyRepo=$agencyRepo;
+        $this->agencyService=$agencyService;
+
     }
 
     /**
@@ -32,10 +45,9 @@ class AgencyController extends Controller
     public function index()
     {
 
-        return AgencyCollection::collection(Agency::paginate(10));
+        return $this->agencyRepo->index();
+        
     }
-
-
 
     /**
      * Undocumented function
@@ -46,8 +58,8 @@ class AgencyController extends Controller
     public function profile()
     {
         $agency = Auth::user()->agency;
+        return $this->agencyRepo->show($agency);
 
-        return $this->successResponse(new AgencyResource($agency));
     }
 
 
@@ -59,21 +71,14 @@ class AgencyController extends Controller
      * @return void
      */
     public function update(Request $request)
-    {
-
-        $agency = Auth::user()->agency;
-
-
-        $this->validate($request, $agency->user->updateRulesAgency);
-        $agency->fill($request->all());
-
-        if ($agency->isClean()) {
-            return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-        $agency->save();
-
-
-        return $this->successResponse($agency);
+    {  
+        
+       $agency = Auth::user()->agency;
+       $this->validate($request, User::$updateRulesAgency);
+      
+       return $this->agencyRepo->update($agency,$request);
+   
+      
     }
 
     /**
@@ -86,12 +91,8 @@ class AgencyController extends Controller
     {
 
         $agency = Auth::user()->agency;
+        return $this->agencyRepo->destroy($agency);
 
-
-        $agency->user->delete();
-        $agency->delete();
-
-        return $this->successResponse($agency);
     }
 
 
@@ -103,30 +104,9 @@ class AgencyController extends Controller
     public function getPreviousTripsReports()
     {
 
-        $trips=DB::table('users')
-        ->join('agencies', 'users.id', '=', 'agencies.user_id')
-        ->rightJoin('trips','agencies.id','=','trips.agency_id')
-        ->rightJoin('reviews','trips.id','=','reviews.trip_id')
-        ->where('agencies.id',Auth::user()->agency->id)
-        ->where('trips.start_date','<', date('Y-m-d'))
-        ->select('trips.title AS title','trips.going as participants', DB::raw('avg(reviews.rating) AS rating'),DB::raw('trips.going*trips.price AS  earnings_per_trip'),'trips.cost as cost')
-        ->groupBy('trip_id')
-        ->get()->toArray();
-
-        $total_earnings = array_sum(array_column($trips,'earnings_per_trip'));
-        $total_cost =array_sum(array_column($trips,'cost'));
-        $profit = $total_earnings - $total_cost;
-
-        $report = [
-            'trips'=>$trips,
-            'total_earnings' => $total_earnings,
-            'total_cost' => $total_cost,
-            'profit' => $profit
-        ];
-
-        return $this->successResponse($report, 200);
+        return $this->agencyRepo->previousReports();
+        
     }
-
 
     /**
      * Undocumented function
@@ -136,14 +116,8 @@ class AgencyController extends Controller
     public function getOngoingTripsReports()
     {
 
-        $ongoing_trips = Auth::user()->agency
-            ->trips()
-            ->where('start_date', '>', date('Y-m-d'))
-            ->select('trips.title','trips.going')
-            ->get();
-            
-         
-        return $this->successResponse($ongoing_trips, 200);
+        return $this->agencyRepo->ongoingReports();
+        
     }
 
     /**
@@ -154,7 +128,8 @@ class AgencyController extends Controller
      */
     public function sendOffers(Request $request)
     {
-        $this->dispatch(new SendOfferJob($request->all()));
+        $this->agencyService->sendMail($request->all());
+        
     }
 
 
@@ -165,17 +140,9 @@ class AgencyController extends Controller
      */
     public function getCustomerHictoric($customer)
     {
-        
-        $user=Auth::user()->agency->id;
+    
+        return $this->agencyRepo->customerHictoric($customer);
       
 
-        $trips=DB::table('trips')
-        ->rightJoin('reviews','trips.id','=','reviews.trip_id')
-        ->select('trips.title','reviews.rating')
-        ->where('reviews.customer_id','=',$customer)
-        ->where('trips.agency_id','=',$user)->get();
-       
-
-        return $this->successResponse($trips, 200);
     }
 }

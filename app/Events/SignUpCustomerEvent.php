@@ -23,6 +23,11 @@ class SignUpCustomerEvent extends Event
 
    
 
+     /**
+      * Undocumented function
+      *
+      * @param [type] $request
+      */
     public function __construct($request)
     {
 
@@ -45,11 +50,22 @@ class SignUpCustomerEvent extends Event
             $this->setUser($user);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param User $user
+     * @return void
+     */
     public function setUser(User $user)
     {
         $this->user = $user;
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     public function getUser()
     {
         return $this->user;

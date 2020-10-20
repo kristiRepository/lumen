@@ -2,25 +2,37 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Trips\TripCollection;
-use App\Http\Resources\Trips\TripResource;
+
+use App\Repositories\TripRepository;
+use App\Services\TripService;
 use App\Trip;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
-use Spatie\QueryBuilder\QueryBuilder;
+
 
 class TripController extends Controller
 {
     use ApiResponser;
+
     /**
-     * Create a new controller instance.
+     * Undocumented variable
      *
-     * @return void
+     * @var [type]
      */
-    public function __construct()
+    private $tripRepo;
+    private $tripService;
+
+
+    /**
+     * Undocumented function
+     *
+     * @param TripRepository $tripRepo
+     * @param TripService $tripService
+     */
+    public function __construct(TripRepository $tripRepo,TripService $tripService)
     {
+        $this->tripRepo=$tripRepo;
+        $this->tripService=$tripService;
     }
 
     /**
@@ -29,16 +41,10 @@ class TripController extends Controller
      * @param Request $request
      * @return void
      */
-    public function index(Request $request)
+    public function index()
     {
+        return $this->tripRepo->index();
 
-        $trips = QueryBuilder::for(Trip::class)
-            ->allowedFilters(['title', 'destination', 'max_price', 'upcoming'])
-            ->paginate(10);
-
-
-
-        return TripCollection::collection($trips);
     }
 
 
@@ -52,21 +58,9 @@ class TripController extends Controller
     {
 
         $this->validate($request, Trip::$storeRules);
-        $trip = new Trip;
-        $trip->title = $request->title;
-        $trip->destination = $request->destination;
-        $trip->start_date = $request->start_date;
-        $trip->end_date = $request->end_date;
-        $trip->cost=$request->cost;
-        $trip->max_participants = $request->max_participants;
-        $trip->going=0;
-        $trip->price = $request->price;
-        $trip->due_date = $request->due_date;
-        $trip->cost = $request->cost;
-
-        Auth::user()->agency->trips()->save($trip);
-
-        return $this->successResponse($trip, Response::HTTP_CREATED);
+        
+        return $this->tripService->store($request);
+        
     }
 
     /**
@@ -77,10 +71,8 @@ class TripController extends Controller
      */
     public function show($trip)
     {
-
-        $trip = Trip::findOrFail($trip);
-
-        return $this->successResponse(new TripResource($trip));
+        return $this->tripRepo->show($trip);
+        
     }
 
     /**
@@ -93,22 +85,9 @@ class TripController extends Controller
     public function update(Request $request, $trip)
     {
 
-
         $this->validate($request, Trip::$updateRules);
-        $trip = Trip::findOrFail($trip);
-         if(is_null(Auth::user()->agency->trips()->where('trips.id','=',$trip->id)->first())){
-             return $this->errorResponse('Cannot modify trip',403);
-         }
-
-        $trip->fill($request->all());
-
-        if ($trip->isClean()) {
-            return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $trip->save();
-
-        return $this->successResponse($trip);
+        return $this->tripRepo->update($request,$trip);
+        
     }
 
     /**
@@ -119,12 +98,7 @@ class TripController extends Controller
      */
     public function destroy($trip)
     {
-        $trip = Trip::findOrFail($trip);
-        if(is_null(Auth::user()->agency->trips()->where('trips.id','=',$trip->id)->first())){
-            return $this->errorResponse('Cannot modify trip',403);
-        }
-        $trip->delete();
-
-        return $this->successResponse($trip);
+        return $this->tripRepo->destroy($trip);
+        
     }
 }

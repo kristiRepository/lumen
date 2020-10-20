@@ -2,25 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Reviews\ReviewCollection;
-use App\Http\Resources\Reviews\ReviewResource;
+
+use App\Repositories\ReviewRepository;
 use App\Review;
+use App\Services\ReviewService;
 use App\Traits\ApiResponser;
-use App\Trip;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Auth;
+
 
 class ReviewController extends Controller
 {
     use ApiResponser;
+
     /**
-     * Create a new controller instance.
+     * Undocumented variable
      *
-     * @return void
+     * @var [type]
      */
-    public function __construct()
+    private $reviewRepo;
+    private $reviewService;
+
+    /**
+     * Undocumented function
+     *
+     * @param ReviewRepository $reviewRepo
+     * @param ReviewService $reviewService
+     */
+    public function __construct(ReviewRepository $reviewRepo, ReviewService $reviewService)
     {
+        $this->reviewRepo = $reviewRepo;
+        $this->reviewService = $reviewService;
     }
 
     /**
@@ -31,8 +42,7 @@ class ReviewController extends Controller
      */
     public function index($trip)
     {
-
-        return ReviewCollection::collection(Review::where('trip_id', $trip)->paginate(10));
+        return $this->reviewRepo->tripReviews($trip);
     }
 
 
@@ -46,33 +56,8 @@ class ReviewController extends Controller
     public function store(Request $request, $trip_id)
     {
 
-
-        $trip = Trip::findOrFail($trip_id);
-
-        if (! $trip->alreadyRegistered($trip_id)) {
-
-           
-            return $this->errorResponse('You can\' review this trip', 401);
-        }
-
-        if (! $trip->isClosed()) {
-            return $this->errorResponse('This trip has not happened yet', 401);
-        }
-
-        if($trip->hasReviewOnThisTrip($trip_id)){
-            return $this->errorResponse('You already have a review on this trip', 401);
-
-        }
-
         $this->validate($request, Review::$storeRules);
-        $review = new Review();
-        $review->trip_id = $trip_id;
-        $review->body = $request->body;
-        $review->rating = $request->rating;
-
-        Auth::user()->customer->reviews()->save($review);
-
-        return $this->successResponse($review, Response::HTTP_CREATED);
+        return $this->reviewService->store($request, $trip_id);
     }
 
     /**
@@ -83,10 +68,7 @@ class ReviewController extends Controller
      */
     public function show($review)
     {
-
-        $review = Review::findOrFail($review);
-
-        return $this->successResponse(new ReviewResource($review));
+        return $this->reviewRepo->show($review);
     }
 
     /**
@@ -100,17 +82,8 @@ class ReviewController extends Controller
     {
 
         $this->validate($request, Review::$updateRules);
-        $review = Review::findOrFail($review);
 
-        $review->fill($request->all());
-
-        if ($review->isClean()) {
-            return $this->errorResponse('At least one value must change', Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $review->save();
-
-        return $this->successResponse($review);
+        return $this->reviewRepo->update($request, $review);
     }
 
     /**
@@ -121,11 +94,6 @@ class ReviewController extends Controller
      */
     public function destroy($review)
     {
-
-        $review = Review::findOrFail($review);
-
-        $review->delete();
-
-        return $this->successResponse($review);
+        return $this->reviewRepo->destroy($review);
     }
 }

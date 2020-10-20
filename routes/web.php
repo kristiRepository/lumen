@@ -19,13 +19,12 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('customers/paypal/execute-payment', 'PaymentController@executePayment');
 
     //Verify email
-    $router->get('/verify','AuthController@verifyEmail');
-    $router->post('/resend-verification','AuthController@resendVerificationEmail');
+    $router->get('/verify', 'AuthController@verifyEmail');
+    $router->post('/resend-verification', 'AuthController@resendVerificationEmail');
 
     //Reset password
-    $router->post('/reset-password','AuthController@resetPassword');
-    $router->post('/new-password','AuthController@newPassword');
-
+    $router->post('/reset-password', 'AuthController@resetPassword');
+    $router->post('/new-password', 'AuthController@newPassword');
 
 
     //Authentication routes
@@ -72,7 +71,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
             //Customers
             $router->get('/customers', 'CustomerController@index');
-            $router->get('/customers/{customer}','AgencyController@getCustomerHictoric');
+            $router->get('/customers/{customer}', 'AgencyController@getCustomerHictoric');
 
 
             //Profile agency
@@ -109,7 +108,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 
             //Agencies historic
-            $router->get('/agencies/{agency}','CustomerController@getAgencyHictoric');
+            $router->get('/agencies/{agency}', 'CustomerController@getAgencyHictoric');
 
 
             //Trip actions

@@ -34,12 +34,12 @@ class HaveNotVerifiedEmailIn10Days extends Command
      * Undocumented function
      *
      * @return void
-     */ 
+     */
     public function handle()
     {
-         DB::table('users')
-        ->where('verified', 0)
-        ->where('created_at','<',date('Y-m-d',(strtotime ( '-10 day' , strtotime ( date('Y-m-d'))))))
-        ->update(array('v_key'=> DB::raw('MD5(CONCAT(users.id, now()))')));
+        DB::table('users')
+            ->where('verified', 0)
+            ->where('created_at', '<', date('Y-m-d', (strtotime('-10 day', strtotime(date('Y-m-d'))))))
+            ->update(array('v_key' => DB::raw('MD5(CONCAT(users.id, now()))')));
     }
 }

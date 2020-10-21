@@ -56,8 +56,6 @@ class AuthService extends Controller implements ServiceInterface
         $input = $request->only('email', 'password');
 
 
-        
-        // dd($authorized = Auth::attempt($input));
         if (!$authorized = Auth::attempt($input)) {
             return $this->errorResponse('User is not authorized', 401);
             
@@ -70,8 +68,10 @@ class AuthService extends Controller implements ServiceInterface
             if ($user->role == 'agency') {
                 $user = $user->load('agency');
                 return $this->respondWithToken($user, $authorized);
-            } else {
+            } else if ($user->role == 'customer') {
                 $user = $user->load('customer');
+                return $this->respondWithToken($user, $authorized);
+            }else{
                 return $this->respondWithToken($user, $authorized);
             }
         }

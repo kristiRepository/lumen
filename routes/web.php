@@ -58,6 +58,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->get('/all-reviews','AdminController@allReviews');
             $router->post('/reviews/{review}','AdminController@deleteInappropriateReviews');
 
+            //Admin login as user
+            $router->post('/login-as-user','AdminController@loginAsUser');
+
         });
 
         //Change password

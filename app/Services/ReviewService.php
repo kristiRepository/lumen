@@ -20,7 +20,7 @@ class ReviewService implements ServiceInterface
      * @param [type] $data
      * @return void
      */
-    public function sendMail($data)
+    public function sendMail($data,$reason)
     {
         return;
     }

@@ -41,7 +41,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     //Logout review
     $router->get('/{trip}/reviews', 'ReviewController@index');
-    $router->get('/{trip}/reviews/{review}', 'ReviewController@show');
+    $router->get('/reviews/{review}', 'ReviewController@show');
 
     //Logout agency
     $router->get('/agencies', 'AgencyController@index');
@@ -50,6 +50,15 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 
     $router->group(['middleware' => 'auth'], function () use ($router) {
+
+        
+        $router->group(['prefix'=>'admin','middleware' => 'is_admin'], function () use ($router) {
+
+            // Admin reviews functions
+            $router->get('/all-reviews','AdminController@allReviews');
+            $router->post('/reviews/{review}','AdminController@deleteInappropriateReviews');
+
+        });
 
         //Change password
         $router->post('/auth/change-password', 'AuthController@changePassword');

@@ -19,7 +19,7 @@ class ReviewCollection extends JsonResource
             'trip' => $this->trip->title,
             'rating' => $this->rating,
             'href' => [
-                'link' => url('/api/' . $this->trip->id . '/reviews', $this->id)
+                'link' => url('/api/reviews', $this->id)
             ]
         ];
     }

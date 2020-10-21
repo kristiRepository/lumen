@@ -56,8 +56,11 @@ class AuthService extends Controller implements ServiceInterface
         $input = $request->only('email', 'password');
 
 
+        
+        // dd($authorized = Auth::attempt($input));
         if (!$authorized = Auth::attempt($input)) {
             return $this->errorResponse('User is not authorized', 401);
+            
         } else {
             $user = User::where('email', $request->email)->first();
             if ($user->verified == 0 && date('Y-m-d') > $user->created_at->addDays(10)) {
@@ -80,7 +83,7 @@ class AuthService extends Controller implements ServiceInterface
      * @param [type] $request
      * @return void
      */
-    public function sendMail($request)
+    public function sendMail($request,$reason)
     {
         if (is_null(User::where('email', $request->email)->first())) {
             return $this->errorResponse('There is no user with this email', 403);

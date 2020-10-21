@@ -8,5 +8,5 @@ interface ServiceInterface
 {
 
 
-    public function sendMail($data);
+    public function sendMail($data,$reason);
 }

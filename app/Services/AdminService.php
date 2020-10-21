@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Jobs\SendOfferJob;
+use App\Jobs\DeleteReviewJob;
 use App\Services\ServiceInterface;
 
 
-class AgencyService implements ServiceInterface
+class AdminService implements ServiceInterface
 {
 
 
@@ -16,8 +16,8 @@ class AgencyService implements ServiceInterface
      * @param [type] $data
      * @return void
      */
-    public function sendMail($data,$reason)
+    public function sendMail($email, $reason)
     {
-        dispatch(new SendOfferJob($data));
+        dispatch(new DeleteReviewJob($email,$reason));
     }
 }

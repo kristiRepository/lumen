@@ -128,7 +128,7 @@ class AgencyController extends Controller
      */
     public function sendOffers(Request $request)
     {
-        $this->agencyService->sendMail($request->all());
+        $this->agencyService->sendMail($request->all(),NULL);
         
     }
 

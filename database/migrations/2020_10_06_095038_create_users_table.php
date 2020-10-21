@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('username')->unique();
             $table->string('password');
             $table->string('email')->unique();
-            $table->enum('role', ['agency', 'customer']);
+            $table->enum('role', ['agency', 'customer','admin']);
             $table->string('phone_number')->unique();
             $table->string('v_key');
             $table->boolean('verified');

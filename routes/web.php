@@ -36,7 +36,6 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
 
     //Logout trip
-    $router->get('/test', 'AgencyController@test');
     $router->get('/trips', 'TripController@index');
     $router->get('/trips/{trip}', 'TripController@show');
 
@@ -96,9 +95,9 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
             //Login review
             $router->post('/{trip_id}/reviews', 'ReviewController@store');
-            $router->put('/{trip}/reviews/{review}', 'ReviewController@update');
-            $router->patch('/{trip}/reviews/{review}', 'ReviewController@update');
-            $router->delete('/{trip}/reviews/{review}', 'ReviewController@destroy');
+            $router->put('reviews/{review}', 'ReviewController@update');
+            $router->patch('reviews/{review}', 'ReviewController@update');
+            $router->delete('reviews/{review}', 'ReviewController@destroy');
 
             //Profile customer
             $router->get('/profile/customers', 'CustomerController@profile');

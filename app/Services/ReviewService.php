@@ -40,7 +40,7 @@ class ReviewService implements ServiceInterface
         if (!$trip->alreadyRegistered($trip_id)) {
 
 
-            return $this->errorResponse('You can\' review this trip', 401);
+            return $this->errorResponse('You can\'t review this trip', 401);
         }
 
         if (!$trip->isClosed()) {

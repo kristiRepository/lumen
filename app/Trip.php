@@ -34,7 +34,7 @@ class Trip extends Model
      */
     public function customers()
     {
-        return $this->belongsToMany(Customer::class);
+        return $this->belongsToMany(Customer::class)->withTimestamps();
     }
 
     /**

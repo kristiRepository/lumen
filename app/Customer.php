@@ -35,7 +35,7 @@ class Customer extends Model
      */
     public function trips()
     {
-        return $this->belongsToMany(Trip::class);
+        return $this->belongsToMany(Trip::class)->withTimestamps();
     }
 
 
@@ -85,19 +85,17 @@ class Customer extends Model
      * @param [type] $trip_model
      * @return void
      */
-    public function notAvailableOnThisDate($trip_model)
+    public function notAvailableOnThisDate($trip)
     {
 
-
-        $trip = Trip::findOrFail($trip_model->id);
         $customer_id = Auth::user()->customer->id;
 
-        return !is_null($trips = DB::table('customers')
+        return ! DB::table('customers')
             ->rightJoin('customer_trip', 'customer_trip.customer_id', '=', 'customers.id')
             ->rightJoin('trips', 'customer_trip.trip_id', '=', 'trips.id')
             ->where('customers.id', $customer_id)
             ->where('trips.start_date', '<', $trip->start_date)
             ->where('trips.end_date', '>', $trip->start_date)
-            ->get());
+            ->get()->isEmpty();
     }
 }

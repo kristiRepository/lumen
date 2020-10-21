@@ -123,7 +123,7 @@ class AuthController extends Controller
 
         $this->validate($request, User::$changePasswordRules);
 
-        return $this->changePassword($request);
+        return $this->authService->changePassword($request);
         
     }
 
@@ -150,7 +150,7 @@ class AuthController extends Controller
      */
     public function resetPassword(Request $request){
         
-        return $this->resetPassword($request);
+        return $this->authService->resetPassword($request);
         
         
     }
@@ -166,7 +166,7 @@ class AuthController extends Controller
 
         $this->validate($request, User::$resetPasswordRules);
 
-        return $this->newPassword($request);
+        return $this->authService->newPassword($request);
 
         
 

@@ -58,7 +58,7 @@ class TripRepository implements RepositoryInterface
     {
 
         $trip = Trip::findOrFail($trip);
-        if (is_null(Auth::user()->agency->trips()->where('trips.id', '=', $trip->id)->first())) {
+        if (Auth::user()->agency->trips()->where('trips.id', '=', $trip->id)->get()->isEmpty()) {
             return $this->errorResponse('Cannot modify trip', 403);
         }
 
@@ -82,8 +82,8 @@ class TripRepository implements RepositoryInterface
     public function destroy($trip)
     {
         $trip = Trip::findOrFail($trip);
-        if (is_null(Auth::user()->agency->trips()->where('trips.id', '=', $trip->id)->first())) {
-            return $this->errorResponse('Cannot modify trip', 403);
+        if (Auth::user()->agency->trips()->where('trips.id', '=', $trip->id)->get()->isEmpty()) {
+            return $this->errorResponse('Cannot delete trip', 403);
         }
         $trip->delete();
 

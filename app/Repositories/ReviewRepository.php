@@ -8,6 +8,8 @@ use App\Repositories\RepositoryInterface;
 use App\Review;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ReviewRepository implements RepositoryInterface
 {
@@ -85,6 +87,9 @@ class ReviewRepository implements RepositoryInterface
     {
         $review = Review::findOrFail($review);
 
+        if(Auth::user()->customer->reviews()->where('id',$review->id)->get()->isEmpty()){
+            return $this->errorResponse('You can \'t execute this action',403);
+        }
         $review->delete();
 
         return $this->successResponse($review);

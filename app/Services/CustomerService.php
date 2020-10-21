@@ -46,6 +46,7 @@ class CustomerService implements ServiceInterface
             return $this->errorResponse('You have already registered for this trip', 401);
         }
 
+        
         if (auth()->user()->customer->notAvailableOnThisDate($trip)) {
 
             return $this->errorResponse('You have reserved another trip on this date', 401);

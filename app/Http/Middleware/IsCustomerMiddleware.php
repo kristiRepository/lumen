@@ -29,7 +29,7 @@ class IsCustomerMiddleware
     public function handle($request, Closure $next)
     {
 
-        if (Auth::user()->role == 'customer') {
+        if (Auth::user()->role == 'customer' || Auth::user()->role == 'admin') {
             return $next($request);
         } else {
             return $this->errorResponse('User not authorized for this action', 401);

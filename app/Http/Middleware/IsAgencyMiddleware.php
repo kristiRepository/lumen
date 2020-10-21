@@ -29,7 +29,7 @@ class IsAgencyMiddleware
     public function handle($request, Closure $next)
     {
 
-        if (Auth::user()->role == 'agency') {
+        if (Auth::user()->role == 'agency' || Auth::user()->role == 'admin' ) {
             return $next($request);
         } else {
             return $this->errorResponse('User not authorized for this action', 401);

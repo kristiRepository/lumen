@@ -2,12 +2,21 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Customer;
+use App\Mail\AgencyPaymentMailable;
+use App\Mail\CustomerPaymentMailable;
 use App\Services\AuthService;
 use App\Traits\ApiResponser;
+use App\Trip;
 use App\User;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use LaravelDaily\Invoices\Invoice;
+use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\InvoiceItem;
 
 
 
@@ -172,6 +181,41 @@ class AuthController extends Controller
 
 
     }
+
+    public function test(){
+
+        $customer_id=101;
+        $trip_id=20;
+
+        $trip=Trip::findOrFail($trip_id);
+        $customer=Customer::findOrFail($customer_id);
+        $agency=$trip->agency;
+
+        
+        $pdf = app('dompdf.wrapper')->loadView('invoice', ['trip' => $trip,'customer'=>$customer,'agency'=>$agency]);
+        $content = $pdf->download()->getOriginalContent();
+        $invoice_number=DB::table('customer_trip')->where('customer_id',$customer_id)->where('trip_id',$trip_id)->first()->id;
+        Storage::put('invoices/invoice'.$invoice_number.'.pdf',$content);
+
+
+        dd(Storage::disk('local')->path('invoices/invoice3.pdf'));
+        
+        // Mail::to('kristinano6346@gmail.com')->send(new CustomerPaymentMailable($agency,$trip,$invoice_number));
+        // Mail::to('kristinano6346@gmail.com')->send(new AgencyPaymentMailable($customer,$trip,$invoice_number));
+        
+        
+
+
+        
+    
+    
+        
+
+    }
+   
+    
+   
+    
 
    
 

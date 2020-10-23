@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\PaymentService;
 use App\Traits\ApiResponser;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -36,7 +37,7 @@ class PaymentController extends Controller
      */
     public function createPayment(Request $request)
     {
-
+        
         return $this->paymentService->create($request);
         
     }

@@ -2,12 +2,16 @@
 
 namespace App\Services;
 
-
+use App\Customer;
+use App\Mail\AgencyPaymentMailable;
+use App\Mail\CustomerPaymentMailable;
 use App\Services\ServiceInterface;
 use App\Traits\ApiResponser;
 use App\Trip;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use PayPal\Api\Amount;
 use PayPal\Api\Item;
 use PayPal\Api\ItemList;
@@ -43,6 +47,10 @@ class PaymentService implements ServiceInterface
      */
     public function create($request)
     {
+        $paid=DB::table('customer_trip')->where('customer_id',auth()->user()->customer->id)->where('trip_id',$request->trip)->paid;
+        if($paid=NULL){
+            return $this->errorResponse('You have already paid for this trip',403);
+        }
         $trip = Trip::findOrFail($request->trip);
 
         if (!auth()->user()->customer->registeredForTrip($request->trip)) {
@@ -134,6 +142,19 @@ class PaymentService implements ServiceInterface
         }
 
         DB::table('customer_trip')->where('customer_id', '=', $request->customer)->where('trip_id', '=', $request->trip)->paid = true;
+
+        $trip=Trip::findOrFail($request->trip);
+        $customer=Customer::findOrFail($request->customer);
+        $agency=$trip->agency;
+
+        $pdf = app('dompdf.wrapper')->loadView('invoice', ['trip' => $trip,'customer'=>$customer,'agency'=>$agency]);
+        $invoice_number=DB::table('customer_trip')->where('customer_id',$request->customer)->where('trip_id',$request->trip)->first()->id;
+        $content = $pdf->download()->getOriginalContent();
+        Storage::put('invoices/invoice'.$request->customer.'.pdf',$content);
+
+
+        Mail::to($customer->user->email)->send(new CustomerPaymentMailable($agency,$trip,$invoice_number));
+        Mail::to($trip->agency->user->email)->send(new AgencyPaymentMailable($customer,$trip,$invoice_number));
 
         return $result;
     }

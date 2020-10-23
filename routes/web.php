@@ -12,7 +12,7 @@
 */
 
 
-
+$router->get('test','AuthController@test');
 $router->group(['prefix' => 'api'], function () use ($router) {
 
     //Execute payment
